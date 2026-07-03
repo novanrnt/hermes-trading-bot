@@ -9,6 +9,12 @@ from pathlib import Path
 from datetime import datetime, timezone, timedelta
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+# Trading Memory & Reflection
+from trading_memory import (
+    load_memory, save_memory, add_trade, get_memory_context,
+    reflect, sync_closed_positions
+)
+
 HERMES = Path(r"C:\Users\Administrator\AppData\Local\hermes")
 WIB = timezone(timedelta(hours=7))
 
@@ -212,7 +218,7 @@ def parse_manager_decision(text, mode="day"):
 
 
 def execute_and_report(parsed, now_wib, mode_label="[DAY]"):
-    """Write final_decision.json, run executor, post result back to Manager topic."""
+    """Write final_decision.json, run executor, post result back to Manager topic. Returns ticket string or None."""
     # Save decision
     with open(FINAL_DECISION_FILE, "w", encoding="utf-8") as f:
         json.dump(parsed, f, indent=2, ensure_ascii=False)
@@ -264,7 +270,9 @@ def execute_and_report(parsed, now_wib, mode_label="[DAY]"):
         print(f"  → Status: {status}")
         if ticket:
             print(f"  → Ticket: {ticket}")
-            
+            return ticket
+        return ""
+
     except subprocess.TimeoutExpired:
         print(f"  → {mode_label} Executor timeout 120s")
         send_bot_msg("manager", f"{mode_label} ⚠️ **Waktu Eksekusi Habis** — executor tidak merespon dalam 120 detik\n\n⏰ {now_wib.strftime('%H:%M WIB')}")
@@ -539,8 +547,15 @@ def run_pipeline(mode="day", symbol="EURUSDm"):
     tech_data = get_technical_data(symbol)
     
     all_context = mt5_context + f"\n\n**Analisis Pair ({symbol}):**\n" + tech_data
-    
-    # 4. Build mode-specific context for each agent
+
+    # ── Load Trading Memory & inject into all contexts ──
+    memory = load_memory()
+    memory_context = get_memory_context(memory, pair=symbol)
+    if memory_context:
+        print(f"  → Trading memory loaded: {memory['stats']['total_trades']} trades, "
+              f"{len([l for l in memory.get('lessons',[]) if l.get('active')])} lessons")
+
+    # Build mode-specific context for each agent
     mode_context = (
         f"**MODE:** {mode_label}\n"
         f"**Timeframe:** {tf_label}\n"
@@ -551,6 +566,8 @@ def run_pipeline(mode="day", symbol="EURUSDm"):
     
     # Inject mode context into agent inputs
     agent_context = mode_context + "\n" + all_context
+    if memory_context:
+        agent_context += "\n\n" + memory_context
     
     if mode == "scalp":
         # SCALP: fleet pipeline — hanya Risk + Manager
@@ -611,6 +628,8 @@ def run_pipeline(mode="day", symbol="EURUSDm"):
 
 **Penilaian Risiko:**
 {risk_result[:400]}"""
+        if memory_context:
+            mgr_context += f"\n\n{memory_context[:400]}"
         funda_result = "N/A (scalp)"
         senti_result = "N/A (scalp)"
         
@@ -642,6 +661,8 @@ def run_pipeline(mode="day", symbol="EURUSDm"):
             f"**Analisis Fundamental:**\n{funda_result[:500]}\n\n"
             f"**Analisis Sentimen:**\n{senti_result[:500]}\n"
         )
+        if memory_context:
+            debate_context += f"\n{memory_context[:400]}\n"
         bull_result = call_llm(BULL_PROMPT, debate_context, "bull_researcher")
         bear_result = call_llm(BEAR_PROMPT, debate_context, "bear_researcher")
         
@@ -686,6 +707,8 @@ def run_pipeline(mode="day", symbol="EURUSDm"):
 
 **Penilaian Risiko:**
 {risk_result[:400]}"""
+        if memory_context:
+            mgr_context += f"\n\n{memory_context[:500]}"
     
     mgr_result = call_llm(MANAGER_PROMPT, mgr_context, "manager")
     print(f"  → Manager response length: {len(mgr_result)} chars")
@@ -708,9 +731,32 @@ def run_pipeline(mode="day", symbol="EURUSDm"):
     if parsed["action"] == "entry":
         print(f"  → {mode_label} ENTRY DIPERINTAHKAN: {parsed.get('best_symbol','?')} {parsed.get('side','?')}")
         print(f"  → Entry: {parsed.get('planned_entry','?')} | SL: {parsed.get('sl_price','?')} | TP: {parsed.get('tp_price','?')}")
-        execute_and_report(parsed, now_wib, mode_label)
+        ticket = execute_and_report(parsed, now_wib, mode_label)
     else:
         print(f"  → {mode_label} Manager skip: {parsed.get('reason','No reason')}")
+        ticket = None
+
+    # ── Save to Trading Memory ──
+    trade_to_memory = dict(parsed)
+    trade_to_memory["ticket"] = str(ticket) if ticket else None
+    if mode == "day":
+        trade_to_memory["bull_summary"] = bull_result[:200] if "bull_result" in dir() else ""
+        trade_to_memory["bear_summary"] = bear_result[:200] if "bear_result" in dir() else ""
+    trade_to_memory["risk_summary"] = risk_result[:200] if "risk_result" in dir() else ""
+    add_trade(memory, trade_to_memory)
+    print(f"  → Trade saved to trading memory (#{len(memory['trades'])})")
+
+    # ── Sync closed positions from MT5 ──
+    updated = sync_closed_positions(memory)
+    if updated:
+        print(f"  → {updated} closed trade(s) synced from MT5")
+
+    # ── Auto-reflect every N closed trades ──
+    refl_text = reflect(memory)
+    if refl_text:
+        refl_msg = f"{mode_label} 🪞 **Trading Reflection**\n\n{refl_text}\n\n⏰ {now_wib.strftime('%H:%M WIB')}"
+        send_bot_msg("manager", refl_msg)
+        print(f"  → Reflection diposting ke topic 974 ✅")
     
     print(f"\n✅ {mode_label} Pipeline selesai ({now_wib.strftime('%H:%M WIB')})")
     print("Cek grup RNT Autotrade untuk postingan agent.")

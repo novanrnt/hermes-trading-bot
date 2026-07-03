@@ -22,6 +22,12 @@ Scanner → Technical Agent → Fundamental Agent → Sentiment Agent → Risk A
 - EMA20 + ADX + RSI(7) + volume spike + price action filters
 - Max 3 scalp trades/day, overlap check
 
+### Crypto Scanner (DRAFT — Binance Futures)
+- Scan Top 100 CoinGecko → filter volume + volatility → ambil funding rate + OI dari Binance
+- Score & ranking → 3-5 kandidat siap pipeline
+- 24/7 nonstop trading
+- 🔴 **Not activated yet** — file: `crypto_scanner.py`
+
 ### Safety
 - ✅ DEMO ONLY — no live execution
 - ✅ Breakeven stop after 2× ATR
@@ -63,6 +69,7 @@ cd hermes-trading-bot
 
 ```
 ├── agent_swarm.py            # Day trade pipeline
+├── crypto_scanner.py         # Crypto Binance scanner (DRAFT)
 ├── scalping_framework.py     # Scalping scanner
 ├── trade_executor_demo.py    # Demo MT5 executor
 ├── trail_check.py            # Trailing stop manager

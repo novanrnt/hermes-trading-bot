@@ -48,6 +48,20 @@ AGENTS_LLM = {
         "topic": "974",
         "name": "Manager Agent",
         "username": "@Alwinmanager_bot"
+    },
+    "bull_researcher": {
+        "env_key": "AGENT_MANAGER_API_KEY",
+        "model": "deepseek-v4-flash",
+        "topic": "974",
+        "name": "Bull Researcher",
+        "username": "@Alwinmanager_bot"
+    },
+    "bear_researcher": {
+        "env_key": "AGENT_MANAGER_API_KEY",
+        "model": "deepseek-v4-flash",
+        "topic": "974",
+        "name": "Bear Researcher",
+        "username": "@Alwinmanager_bot"
     }
 }
 
@@ -425,6 +439,42 @@ Contoh:
 
 INGAT: blok ## FINAL DECISION WAJIB di paling akhir dan Action WAJIB diisi BUY/SELL/WAIT."""
 
+BULL_PROMPT = """You are Bull Researcher for RNT Autotrade.
+
+**IQ:** 165
+**Personality:** Optimis, agresif, opportunity-seeker, berani ambil risiko, percaya diri. Tugas lo adalah MENCARI ALASAN KENAPA TRADE INI HARUS DIAMBIL.
+
+**Bahasa:** WAJIB pakai Bahasa Indonesia. Semangat, meyakinkan, data-driven.
+
+**Your Task:**
+Review analisis dari Technical, Fundamental, dan Sentiment Agent. Cari:
+1. Konfirmasi teknikal yang mendukung entry
+2. Fundamental yang alignment
+3. Sentimen pasar yang mendukung
+4. Risk/reward yang menarik
+5. Peluang yang dilewatkan jika tidak entry
+
+Buat argumen BULL yang kuat, tapi tetap logis — jangan FOMO.
+Format: 3-4 kalimat argumen BULL. Sebutkan level entry yang diusulkan dan confidence."""
+
+BEAR_PROMPT = """You are Bear Researcher for RNT Autotrade.
+
+**IQ:** 165
+**Personality:** Skeptis, konservatif, devil's advocate, risk-aware, kritis. Tugas lo adalah MENCARI ALASAN KENAPA TRADE INI HARUS DIHINDARI.
+
+**Bahasa:** WAJIB pakai Bahasa Indonesia. Tenang, analitis, no-nonsense.
+
+**Your Task:**
+Review analisis dari Technical, Fundamental, dan Sentiment Agent. Cari:
+1. Kelemahan dalam analisis teknikal (false signal, overbought/oversold)
+2. Fundamental yang kontradiksi
+3. Sentimen yang sudah terlalu ramai (crowded trade)
+4. Skenario terburuk jika entry
+5. Level SL yang terlalu rapat
+
+Buat argumen BEAR yang kuat — jadi devil's advocate. Challenge setiap asumsi.
+Format: 3-4 kalimat argumen BEAR. Sebutkan risiko spesifik dan level invalidasi."""
+
 # ── LLM Call (via SumoPod) ──────────────────────────────────
 
 def call_llm(system_prompt, user_context, agent_name):
@@ -470,7 +520,7 @@ def run_pipeline(mode="day", symbol="EURUSDm"):
     tf_label = "M5" if mode == "scalp" else "H4→H1→M15"
     risk_rr = "1.5" if mode == "scalp" else "1.8"
     risk_pct = "0.3%" if mode == "scalp" else "0.5%"
-    steps = "3" if mode == "scalp" else "6"
+    steps = "5" if mode == "scalp" else "8"
     
     print(f"[{now_wib.strftime('%H:%M WIB')}] {mode_label} 🔄 Menjalankan Agent Swarm Pipeline ({symbol})")
     print("="*50)
@@ -541,7 +591,7 @@ def run_pipeline(mode="day", symbol="EURUSDm"):
                 file_status = "corrupt ❌"
         print(f"  → [SCALP] Scanner detail: {file_status}")
         
-        print(f"[2/3] {mode_label} Risk Agent menilai risiko...")
+        print(f"[2/5] {mode_label} Risk Agent menilai risiko...")
         risk_context = f"{agent_context}\n\n**Scanner Analysis:**\n{tech_result}"
         risk_result = call_llm(RISK_PROMPT, risk_context, "risk")
         msg = f"{mode_label} 🛡️ **Penilaian Risiko**\n\n{risk_result}\n\n⏰ {now_wib.strftime('%H:%M WIB')}"
@@ -549,7 +599,7 @@ def run_pipeline(mode="day", symbol="EURUSDm"):
         print(f"  → Diposting ke topic 973 ✅")
         time.sleep(2)
         
-        print(f"[3/3] {mode_label} Manager mengambil keputusan final...")
+        print(f"[3/5] {mode_label} Manager mengambil keputusan final...")
         mgr_context = f"""**Konteks Pasar:**
 {mt5_context}
 
@@ -560,40 +610,59 @@ def run_pipeline(mode="day", symbol="EURUSDm"):
 {tech_result[:400]}
 
 **Penilaian Risiko:**
-{risk_result[:400]}
-"""
+{risk_result[:400]}"""
         funda_result = "N/A (scalp)"
         senti_result = "N/A (scalp)"
         
     else:
-        # DAY: full pipeline — sequential (glm-5 ~14s per call, total ~70s)
-        print(f"[2/6] {mode_label} Technical Agent menganalisis...")
+        # DAY: full pipeline
+        print(f"[2/8] {mode_label} Technical Agent menganalisis...")
         tech_result = call_llm(TECH_PROMPT, agent_context, "technical")
         msg = f"{mode_label} 🧠 **Analisis Teknikal**\n\n{tech_result}\n\n⏰ {now_wib.strftime('%H:%M WIB')}"
         send_bot_msg("technical", msg)
         print(f"  → technical selesai ✅")
         
-        print(f"[3/6] {mode_label} Fundamental Agent menganalisis...")
+        print(f"[3/8] {mode_label} Fundamental Agent menganalisis...")
         funda_result = call_llm(FUNDA_PROMPT, agent_context, "fundamental")
         msg = f"{mode_label} 📰 **Analisis Fundamental**\n\n{funda_result}\n\n⏰ {now_wib.strftime('%H:%M WIB')}"
         send_bot_msg("fundamental", msg)
         print(f"  → fundamental selesai ✅")
         
-        print(f"[4/6] {mode_label} Sentiment Agent menganalisis...")
+        print(f"[4/8] {mode_label} Sentiment Agent menganalisis...")
         senti_result = call_llm(SENTI_PROMPT, agent_context, "sentiment")
         msg = f"{mode_label} 📈 **Analisis Sentimen**\n\n{senti_result}\n\n⏰ {now_wib.strftime('%H:%M WIB')}"
         send_bot_msg("sentiment", msg)
-        print(f"  → sentiment selesai ✅")
+        print(f"  → sentiment selesai ✅\n")
         
-        print(f"[5/6] {mode_label} Risk Agent menilai risiko...")
-        risk_context = f"{agent_context}\n\n**Pandangan Teknikal:**\n{tech_result[:500]}"
+        print(f"[5/8] {mode_label} Bull Researcher menyusun argumen...")
+        debate_context = (
+            f"**Konteks Pasar:**\n{mt5_context}\n\n"
+            f"**Mode:** {mode_label} | Symbol: {symbol}\n\n"
+            f"**Analisis Teknikal:**\n{tech_result[:500]}\n\n"
+            f"**Analisis Fundamental:**\n{funda_result[:500]}\n\n"
+            f"**Analisis Sentimen:**\n{senti_result[:500]}\n"
+        )
+        bull_result = call_llm(BULL_PROMPT, debate_context, "bull_researcher")
+        bear_result = call_llm(BEAR_PROMPT, debate_context, "bear_researcher")
+        
+        debate_msg = (
+            f"{mode_label} 🐂🐻 **Research Debate**\n\n"
+            f"**🐂 BULL CASE:**\n{bull_result}\n\n"
+            f"**🐻 BEAR CASE:**\n{bear_result}\n"
+            f"\n⏰ {now_wib.strftime('%H:%M WIB')}"
+        )
+        send_bot_msg("manager", debate_msg)
+        print(f"  → Bull & Bear debate selesai, diposting ke topic 974 ✅\n")
+        
+        print(f"[6/8] {mode_label} Risk Agent menilai risiko...")
+        risk_context = f"{agent_context}\n\n**Pandangan Teknikal:**\n{tech_result[:400]}\n\n**Bull Case:**\n{bull_result[:300]}\n\n**Bear Case:**\n{bear_result[:300]}"
         risk_result = call_llm(RISK_PROMPT, risk_context, "risk")
         msg = f"{mode_label} 🛡️ **Penilaian Risiko**\n\n{risk_result}\n\n⏰ {now_wib.strftime('%H:%M WIB')}"
         send_bot_msg("risk", msg)
         print(f"  → risk selesai ✅")
         time.sleep(1.5)
         
-        print(f"[6/6] {mode_label} Manager mengambil keputusan final...")
+        print(f"[7/8] {mode_label} Manager mengambil keputusan final...")
         mgr_context = f"""**Konteks Pasar:**
 {mt5_context}
 
@@ -609,9 +678,14 @@ def run_pipeline(mode="day", symbol="EURUSDm"):
 **Analisis Sentimen:**
 {senti_result[:400]}
 
+**Bull Case (PRO Entry):**
+{bull_result[:300]}
+
+**Bear Case (KONTRA Entry):**
+{bear_result[:300]}
+
 **Penilaian Risiko:**
-{risk_result[:400]}
-"""
+{risk_result[:400]}"""
     
     mgr_result = call_llm(MANAGER_PROMPT, mgr_context, "manager")
     print(f"  → Manager response length: {len(mgr_result)} chars")

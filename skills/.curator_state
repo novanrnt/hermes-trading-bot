@@ -1,0 +1,9 @@
+{
+  "last_report_path": "C:\\Users\\Administrator\\AppData\\Local\\hermes\\logs\\curator\\20260702-163437",
+  "last_run_at": "2026-07-02T16:34:37.952157+00:00",
+  "last_run_duration_seconds": 362.885632,
+  "last_run_summary": "auto: no changes; llm: All verifications pass. The consolidated skills are clean. Here's the summary:\n\n---\n\n## Consolidation Summary\n\n### What was done\n\nI processed 68 agent-created skills across 4 cluster passes. The skill library went from **68 → 61 skills** (7…\narchived 11 skill(s):\n  • architecture-diagram → excalidraw\n  • codebase-inspection → requesting-code-review\n  • node-inspect-debugger → systematic-debugging\n  • simplify-code → requesting-code-review\n  • heartmula — pruned (stale)\n  • python-debugpy — pruned (stale)\n  • research-paper-writing — pruned (stale)\n  • sketch — pruned (stale)\n  • songsee — pruned (stale)\n  • songwriting-and-ai-music — pruned (stale)\n  … and 1 more\nfull report: hermes curator status\nkeep an umbrella stable: hermes curator pin excalidraw",
+  "last_run_summary_shown_at": null,
+  "paused": false,
+  "run_count": 3
+}

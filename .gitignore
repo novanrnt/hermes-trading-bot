@@ -1,0 +1,72 @@
+# Environment & Secrets
+.env
+*.key
+*secret*
+*token*
+kata-sandi*
+password*
+
+# Trading Data & Logs
+candidate_data.json
+kai_audit_log.json
+trade_log.json
+historical_data*
+*.hst
+*.csv
+*.sqlite
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+.venv/
+venv/
+env/
+
+# Node
+node_modules/
+npm-debug.log
+node/
+
+# OS
+Thumbs.db
+.DS_Store
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Cron output
+cron/output/
+
+# Portable git installation
+git/
+
+# Hermes cache & internal
+cache/
+.hermes_history
+logs/
+sessions/
+output/
+audio_cache/
+
+# Binaries
+bin/
+*.exe
+
+# Lock & auth files
+*.lock
+auth.json
+
+# Backups
+*.bak*
+
+# Curator backups (large archives)
+skills/.curator_backups/

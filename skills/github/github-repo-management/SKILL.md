@@ -501,6 +501,18 @@ for g in json.load(sys.stdin):
     print(f\"  {g['id']}  {g['description'] or '(no desc)':40}  {files}\")"
 ```
 
+## Platform-Specific Pitfalls
+
+On **Windows (git-bash/MSYS)**, especially from **Chinese VPS with slow GitHub connections**:
+- See `references/windows-git-pitfalls.md` for:
+  - Handling stuck `index.lock` files from killed git processes
+  - `.gitignore` patterns that prevent repo bloat (node/, logs/, sessions/, audio_cache/, etc.)
+  - Fixing over-inclusive initial commits via `git rm --cached` + `git commit --amend`
+  - LF/CRLF warnings (cosmetic on Windows)
+- **SSH is preferred over HTTPS on slow connections** — HTTPS push can time out
+- Use `terminal(background=true, notify_on_complete=true)` with `timeout=300+` for pushes
+- SSH config for slow connections: `ssh -o ServerAliveInterval=15 -o ConnectTimeout=30`
+
 ## Quick Reference Table
 
 | Action | gh | git + curl |

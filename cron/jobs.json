@@ -1,0 +1,425 @@
+{
+  "jobs": [
+    {
+      "id": "d0af9b81adbe",
+      "name": "Daily Auto-Tuner (00:00 WIB)",
+      "prompt": "Run the auto-tuner to analyze daily trading performance and adjust parameters.\n\nExecute: /c/Users/Administrator/AppData/Local/hermes/hermes-agent/venv/Scripts/python.exe /c/Users/Administrator/AppData/Local/hermes/auto_tuner.py\n\nReport the results: win rate, total trades, PnL, and any parameter changes applied.",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 0 * * 1-5",
+        "display": "0 0 * * 1-5"
+      },
+      "schedule_display": "0 0 * * 1-5",
+      "repeat": {
+        "times": null,
+        "completed": 6
+      },
+      "enabled": false,
+      "state": "paused",
+      "paused_at": "2026-06-23T12:33:40.711413+08:00",
+      "paused_reason": null,
+      "created_at": "2026-06-15T23:45:16.665182+08:00",
+      "next_run_at": "2026-06-24T00:00:00+08:00",
+      "last_run_at": "2026-06-23T00:04:07.280855+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "telegram:-1004396608984:156",
+      "origin": {
+        "platform": "telegram",
+        "chat_id": "1189060636",
+        "chat_name": "metsky\ud83c\udfa9",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": "C:\\Users\\Administrator\\AppData\\Local\\hermes"
+    },
+    {
+      "id": "b8bcbdbbd91d",
+      "name": "Trailing Stop Check (5min)",
+      "prompt": "Run the adaptive trailing stop manager. Check all open positions and apply ATR-based trailing stops.\n\nExecute: /c/Users/Administrator/AppData/Local/hermes/hermes-agent/venv/Scripts/python.exe /c/Users/Administrator/AppData/Local/hermes/trailing_manager.py\n\nIf any positions had their SL updated, report the change. If nothing happened, respond briefly or stay silent.",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "trail_check.py",
+      "no_agent": true,
+      "context_from": null,
+      "schedule": {
+        "kind": "interval",
+        "minutes": 5,
+        "display": "every 5m"
+      },
+      "schedule_display": "every 5m",
+      "repeat": {
+        "times": null,
+        "completed": 4256
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-16T01:43:28.886063+08:00",
+      "next_run_at": "2026-07-04T03:41:47.444752+08:00",
+      "last_run_at": "2026-07-04T03:36:47.444752+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "telegram:-1004396608984:156",
+      "origin": {
+        "platform": "telegram",
+        "chat_id": "1189060636",
+        "chat_name": "metsky\ud83c\udfa9",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": "C:\\Users\\Administrator\\AppData\\Local\\hermes"
+    },
+    {
+      "id": "e4c557bd3c09",
+      "name": "Kai Review Agent",
+      "prompt": "",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "kai_cron.py",
+      "no_agent": true,
+      "context_from": null,
+      "schedule": {
+        "kind": "interval",
+        "minutes": 30,
+        "display": "every 30m"
+      },
+      "schedule_display": "every 30m",
+      "repeat": {
+        "times": null,
+        "completed": 843
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-16T04:33:44.822082+08:00",
+      "next_run_at": "2026-07-04T03:45:46.907057+08:00",
+      "last_run_at": "2026-07-04T03:15:46.907057+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "local",
+      "origin": {
+        "platform": "telegram",
+        "chat_id": "1189060636",
+        "chat_name": "metsky\ud83c\udfa9",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": null
+    },
+    {
+      "id": "0d452db8e3c7",
+      "name": "Kai Interactive Poller",
+      "prompt": "Run kai_interactive.py to check for new messages in OwnerRoom (Topic 6) and respond as Kai.",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "kai_interactive.py",
+      "no_agent": true,
+      "context_from": null,
+      "schedule": {
+        "kind": "interval",
+        "minutes": 1,
+        "display": "every 1m"
+      },
+      "schedule_display": "every 1m",
+      "repeat": {
+        "times": null,
+        "completed": 12684
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-16T04:44:45.164768+08:00",
+      "next_run_at": "2026-07-04T03:41:47.853367+08:00",
+      "last_run_at": "2026-07-04T03:40:47.853367+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "local",
+      "origin": {
+        "platform": "telegram",
+        "chat_id": "1189060636",
+        "chat_name": "metsky\ud83c\udfa9",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": null
+    },
+    {
+      "id": "d9b90f325792",
+      "name": "Health Check (5min)",
+      "prompt": "",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "health_check.py",
+      "no_agent": true,
+      "context_from": null,
+      "schedule": {
+        "kind": "interval",
+        "minutes": 5,
+        "display": "every 5m"
+      },
+      "schedule_display": "every 5m",
+      "repeat": {
+        "times": null,
+        "completed": 4140
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-16T13:20:52.683329+08:00",
+      "next_run_at": "2026-07-04T03:42:47.420548+08:00",
+      "last_run_at": "2026-07-04T03:37:47.420548+08:00",
+      "last_status": "error",
+      "last_error": "Script exited with code 1",
+      "last_delivery_error": null,
+      "deliver": "local",
+      "origin": {
+        "platform": "telegram",
+        "chat_id": "-1004396608984",
+        "chat_name": "RNT AUTOTRADE",
+        "thread_id": "6"
+      },
+      "enabled_toolsets": null,
+      "workdir": "C:\\Users\\Administrator\\AppData\\Local\\hermes"
+    },
+    {
+      "id": "efd4efc383e8",
+      "name": "Dashboard Watchdog",
+      "prompt": "",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "dashboard_watchdog.py",
+      "no_agent": true,
+      "context_from": null,
+      "schedule": {
+        "kind": "interval",
+        "minutes": 5,
+        "display": "every 5m"
+      },
+      "schedule_display": "every 5m",
+      "repeat": {
+        "times": null,
+        "completed": 3462
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-19T17:13:43.070781+08:00",
+      "next_run_at": "2026-07-04T03:41:49.336845+08:00",
+      "last_run_at": "2026-07-04T03:36:49.336845+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "telegram:-1004396608984:5",
+      "origin": {
+        "platform": "telegram",
+        "chat_id": "1189060636",
+        "chat_name": "metsky\ud83c\udfa9",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": null
+    },
+    {
+      "id": "6d85021bc5c7",
+      "name": "Daily Monte Carlo (23:00 WIB)",
+      "prompt": "",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "monte_carlo.py",
+      "no_agent": true,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 23 * * 1-5",
+        "display": "0 23 * * 1-5"
+      },
+      "schedule_display": "0 23 * * 1-5",
+      "repeat": {
+        "times": null,
+        "completed": 5
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-28T23:56:43.265798+08:00",
+      "next_run_at": "2026-07-06T23:00:00+08:00",
+      "last_run_at": "2026-07-03T23:00:40.211976+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "telegram:-1004396608984:156",
+      "origin": {
+        "platform": "telegram",
+        "chat_id": "1189060636",
+        "chat_name": "metsky\ud83c\udfa9",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": null
+    },
+    {
+      "id": "1fa46bfd8ad7",
+      "name": "Monte Carlo Milestone (every 100 trades)",
+      "prompt": "Monte Carlo milestone check",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "mc_milestone.py",
+      "no_agent": true,
+      "context_from": null,
+      "schedule": {
+        "kind": "interval",
+        "minutes": 360,
+        "display": "every 360m"
+      },
+      "schedule_display": "every 360m",
+      "repeat": {
+        "times": null,
+        "completed": 20
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-28T23:57:33.579642+08:00",
+      "next_run_at": "2026-07-04T06:00:41.207534+08:00",
+      "last_run_at": "2026-07-04T00:00:41.207534+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "telegram:-1004396608984:156",
+      "origin": {
+        "platform": "telegram",
+        "chat_id": "1189060636",
+        "chat_name": "metsky\ud83c\udfa9",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": null
+    },
+    {
+      "id": "b6752100c443",
+      "name": "Scalping Scanner (10min)",
+      "prompt": "[SCALP] Quick M5 scan \u2014 check all 8 symbols for scalping setups. Prints report only if candidate found. Silent otherwise.",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "scalping_scanner.py",
+      "no_agent": true,
+      "context_from": null,
+      "schedule": {
+        "kind": "interval",
+        "minutes": 30,
+        "display": "every 30m"
+      },
+      "schedule_display": "every 30m",
+      "repeat": {
+        "times": null,
+        "completed": 246
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-07-02T05:33:50.852061+08:00",
+      "next_run_at": "2026-07-04T03:42:46.959495+08:00",
+      "last_run_at": "2026-07-04T03:12:46.959495+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "origin",
+      "origin": {
+        "platform": "telegram",
+        "chat_id": "1189060636",
+        "chat_name": "metsky\ud83c\udfa9",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": null
+    },
+    {
+      "id": "54151c37162a",
+      "name": "Day Trade Pipeline (2h)",
+      "prompt": "",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "day_trade_cron.py",
+      "no_agent": true,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 7-21 * * 1-5",
+        "display": "0 7-21 * * 1-5"
+      },
+      "schedule_display": "0 7-21 * * 1-5",
+      "repeat": {
+        "times": null,
+        "completed": 15
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-07-03T03:08:22.960669+08:00",
+      "next_run_at": "2026-07-06T07:00:00+08:00",
+      "last_run_at": "2026-07-03T21:01:39.699100+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "origin",
+      "origin": {
+        "platform": "telegram",
+        "chat_id": "1189060636",
+        "chat_name": "metsky\ud83c\udfa9",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": "C:\\Users\\Administrator\\AppData\\Local\\hermes"
+    }
+  ],
+  "updated_at": "2026-07-04T03:40:47.853367+08:00"
+}

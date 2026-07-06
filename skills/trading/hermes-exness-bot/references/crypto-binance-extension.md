@@ -1,16 +1,31 @@
 # Crypto Binance Futures Extension
 
-> **Status:** Design discussion only (2026-07-04) — no code written.
+> **Status:** `crypto_scanner.py` written (DRAFT) — 2026-07-04.
+> **Not activated — scanning logic only, no pipeline integration yet.**
 > **User preference:** metski prefers Binance futures over Exness crypto CFDs.
-> **Next step:** User said "nanti lagi" — revisit when ready.
 
-## Architecture (Planned)
+## Implemented: `crypto_scanner.py`
+
+**File:** `crypto_scanner.py` (root of hermes folder)
+
+A standalone Python script that:
+1. Fetches Top 100 coins from CoinGecko API
+2. **Pass 1 filter:** volume ≥ $50M + price change ≥ 2% in 24h
+3. **Pass 2 filter:** fetches Binance futures funding rate + open interest for each candidate
+4. **Pass 3 scoring:** ranks by volume score + volatility score + funding rate score + OI score
+5. Returns top 3-5 candidates with full metadata
+
+**Output:** saves to `crypto_candidates.json` (ready for pipeline consumption)
+
+**Run:** `python crypto_scanner.py`
+**GitHub:** committed to `novanrnt/hermes-trading-bot`
+
+## Planned Architecture (not yet implemented)
 
 Same Hermes multi-agent swarm pattern as forex, adapted for Binance futures:
 
 ```
-→ CoinGecko Top 100 scan (volume + momentum filter)
-→ Filter to 3-5 candidates (highest volume + volatility)
+→ crypto_scanner.py → Top 100 CoinGecko → filter 3-5
 → Full 5-Agent Pipeline:
   → Technical Agent — 1m/5m/15m analysis (crypto timeframes, faster than forex)
   → Fundamental Agent — on-chain data (TVL, halving, ETF flow, Binance listings)
@@ -42,21 +57,11 @@ Same Hermes multi-agent swarm pattern as forex, adapted for Binance futures:
 - **Sentiment:** Binance funding rate API, Coinglass (OI), alternative.me Fear & Greed Index
 - **Scanner:** CoinGecko top 100 → filter by 24h volume + price change momentum
 
-## Scan → Pipeline Flow
-
-1. **Scanner:** CoinGecko Top 100 → sort by 24h volume → pick top 5-10 with momentum (ADX/RSI)
-2. **Filter:** eliminate duplikat, coins with extreme spreads, low liquidity futures pairs
-3. **Technical Agent:** analyze chart 1m-15m per candidate (parallelized)
-4. **Fundamental Agent:** on-chain/news context per candidate
-5. **Sentiment Agent:** funding rate + OI + Fear & Greed
-6. **Risk Agent:** Binance-specific lot sizing (contract size, leverage), SL/TP
-7. **Manager:** merge all → BUY/SELL/WAIT per candidate
-
 ## Constraints
 
 - **Max 5 positions total** (same as forex, but crypto-only pool since separate account)
 - **Funding rate filter:** positive funding (longs pay shorts) → prefer short bias; negative → prefer long. Skips if abs(funding) > extreme threshold
-- **Leverage:** Binance futures supports 1-125x. Suggest conservative (3-5x for day, 10x for scalp) — metski can decide
+- **Leverage:** Binance futures supports 1-125x. Suggest conservative (3-5x for day, 10x for scalp)
 - **No session gate** — 24/7 means continuous scanning. Consider cooldown between same-coin entries
 - **API rate limits:** Binance has strict WS weight limits — scanner must batch requests
 
@@ -65,3 +70,4 @@ Same Hermes multi-agent swarm pattern as forex, adapted for Binance futures:
 Main pipeline architecture: `SKILL.md` in `hermes-exness-bot`
 Forex scalping framework: `references/scalping-framework.md`
 Forex day trade pipeline: `references/multi-agent-bots.md`
+Bull/Bear debate: `references/bull-bear-debate.md`

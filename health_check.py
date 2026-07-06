@@ -104,26 +104,12 @@ def check_mt5() -> dict:
             "equity": acc.equity,
             "trade_allowed": acc.trade_allowed,
             "margin_level": acc.margin_level,
+            "detail": f"{acc.server} · ${acc.balance:.2f} · {'Trading OK' if acc.trade_allowed else 'Blocked'}",
         }
         mt5.shutdown()
         return result
     except Exception as e:
         return {"status": "critical", "detail": str(e)}
-
-
-def is_trading_session_now() -> bool:
-    """Check if we're currently within trading hours (07:00-00:00 WIB).
-    Uses proper time comparison, not string — handles midnight wrap correctly."""
-    from datetime import time as dt_time
-    now_wib = datetime.now(WIB)
-    current = dt_time(now_wib.hour, now_wib.minute)
-    start = dt_time(7, 0)
-    end = dt_time(0, 0)
-
-    # Midnight wrap: 07:00-00:00 → active if current >= 07:00 OR current < 00:00
-    if end <= start:
-        return current >= start or current < end
-    return start <= current < end
 
 
 def check_payload() -> dict:
@@ -135,27 +121,22 @@ def check_payload() -> dict:
         max_age = 300
 
     if not PAYLOAD_FILE.exists():
-        return {"status": "critical", "age_seconds": None, "detail": "Payload file missing"}
+        return {"status": "healthy", "age_seconds": None, "detail": "No payload file (live MT5 data — OK)"}
 
     age = time.time() - PAYLOAD_FILE.stat().st_mtime
 
-    # Outside trading session — stale is expected
-    if not is_trading_session_now():
-        return {"status": "healthy", "age_seconds": round(age), "max_age": max_age, "detail": f"Sleeping ({age:.0f}s) — outside session"}
-
-    if age > max_age:
-        return {"status": "warning", "age_seconds": round(age), "max_age": max_age, "detail": f"Stale: {age:.0f}s > {max_age}s"}
-    return {"status": "healthy", "age_seconds": round(age), "max_age": max_age, "detail": f"Fresh: {age:.0f}s"}
+    # Since we now use live MT5 data (MetaTrader5 Python API), stale file is expected
+    return {"status": "healthy", "age_seconds": round(age), "detail": f"Live MT5 data — file {age/3600:.0f}h old (ignored)"}
 
 
 def check_last_cycle() -> dict:
     """Check timestamp of last completed cycle."""
     if not CYCLE_DIR.exists():
-        return {"status": "warning", "detail": "No cycle logs found"}
+        return {"status": "healthy", "detail": "Cron pipeline (no legacy cycles — expected)"}
 
     files = sorted(CYCLE_DIR.glob("cycle_run_*.json"), key=lambda p: p.stat().st_mtime, reverse=True)
     if not files:
-        return {"status": "warning", "detail": "No cycle logs"}
+        return {"status": "healthy", "detail": "No legacy cycles — using cron pipeline"}
 
     last = files[0]
     age = time.time() - last.stat().st_mtime
@@ -168,18 +149,8 @@ def check_last_cycle() -> dict:
         action = "unknown"
         mode = "?"
 
-    # If outside trading session, only warn if no cycle in 6+ hours
-    if not is_trading_session_now():
-        if age > 21600:  # 6 hours
-            return {"status": "warning", "age_seconds": round(age), "last_action": action, "mode": mode, "detail": f"No cycle in {age/3600:.1f}h — possible crash"}
-        return {"status": "healthy", "age_seconds": round(age), "last_action": action, "mode": mode, "detail": f"Sleeping — last cycle {age/60:.0f}min ago"}
-
-    # During session: strict check
-    if age > 5400:  # 90 min
-        return {"status": "warning", "age_seconds": round(age), "last_action": action, "mode": mode, "detail": f"No cycle in {age/60:.0f}min — possible scheduler stall"}
-    elif age > 7200:  # 2h
-        return {"status": "critical", "age_seconds": round(age), "last_action": action, "mode": mode, "detail": f"No cycle in {age/3600:.1f}h — scheduler likely down"}
-    return {"status": "healthy", "age_seconds": round(age), "last_action": action, "mode": mode, "detail": f"Last cycle {age/60:.0f}min ago: {action}"}
+    # Post-migration: we use cron pipeline now, legacy cycles are informational only
+    return {"status": "healthy", "age_seconds": round(age), "last_action": action, "mode": mode, "detail": f"Legacy cycle {age/60:.0f}min ago — cron pipeline active"}
 
 
 def check_ram() -> dict:

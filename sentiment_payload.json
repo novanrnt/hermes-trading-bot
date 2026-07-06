@@ -1,0 +1,42 @@
+{
+  "status": "available",
+  "source": "mt5_computed_live",
+  "timezone": "UTC",
+  "updated_at": "2026-06-15T01:46:56.897209+00:00",
+  "market_mood": "risk_on",
+  "usd_bias": "bearish",
+  "risk_mode": "risk_on",
+  "gold_sentiment": "bullish",
+  "jpy_safe_haven_flow": "neutral",
+  "equity_mood": "unknown",
+  "us10y_yield_bias": "unknown",
+  "dxy_bias": "bearish",
+  "blocked_symbols": [],
+  "caution_symbols": [],
+  "notes": "Live MT5 computed. DXY proxy=-40.88, XAUUSD=4315.86, USDJPY=160.192",
+  "_raw": {
+    "dxy": {
+      "dxy_proxy": -40.88,
+      "usd_bias": "bearish"
+    },
+    "gold": {
+      "gold_sentiment": "bullish",
+      "xauusd_price": 4315.86,
+      "pct_from_h4_ma20": 3.59
+    },
+    "mood": {
+      "market_mood": "risk_on",
+      "risk_mode": "risk_on",
+      "usdjpy_proxy": 160.192,
+      "trend_alignment": {
+        "EURUSDm": "up",
+        "GBPUSDm": "up",
+        "USDJPYm": "up",
+        "AUDUSDm": "up"
+      }
+    },
+    "jpy": {
+      "jpy_safe_haven_flow": "neutral"
+    }
+  }
+}

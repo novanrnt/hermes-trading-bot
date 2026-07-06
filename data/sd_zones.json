@@ -1,0 +1,183 @@
+{
+  "zones": {
+    "EURUSDm": [
+      {
+        "symbol": "EURUSDm",
+        "type": "supply",
+        "zone_low": 1.14162,
+        "zone_high": 1.14168,
+        "base_time": "2026-06-30T01:00:00+00:00",
+        "base_price": 1.1404,
+        "touch_count": 0,
+        "last_touch": "",
+        "status": "expired_age",
+        "expired": true
+      }
+    ],
+    "GBPUSDm": [],
+    "USDJPYm": [],
+    "USDCHFm": [
+      {
+        "symbol": "USDCHFm",
+        "type": "demand",
+        "zone_low": 0.80809,
+        "zone_high": 0.80814,
+        "base_time": "2026-06-26T16:00:00+00:00",
+        "base_price": 0.80935,
+        "touch_count": 0,
+        "last_touch": "",
+        "status": "expired_age",
+        "expired": true
+      },
+      {
+        "symbol": "USDCHFm",
+        "type": "supply",
+        "zone_low": 0.81051,
+        "zone_high": 0.81055,
+        "base_time": "2026-06-26T03:00:00+00:00",
+        "base_price": 0.80944,
+        "touch_count": 0,
+        "last_touch": "",
+        "status": "expired_age",
+        "expired": true
+      },
+      {
+        "symbol": "USDCHFm",
+        "type": "demand",
+        "zone_low": 0.80809,
+        "zone_high": 0.80814,
+        "base_time": "2026-06-26T16:00:00+00:00",
+        "base_price": 0.80935,
+        "touch_count": 0,
+        "last_touch": "",
+        "status": "expired_age",
+        "expired": true
+      },
+      {
+        "symbol": "USDCHFm",
+        "type": "demand",
+        "zone_low": 0.80809,
+        "zone_high": 0.80814,
+        "base_time": "2026-06-26T16:00:00+00:00",
+        "base_price": 0.80935,
+        "touch_count": 0,
+        "last_touch": "",
+        "status": "expired_age",
+        "expired": true
+      },
+      {
+        "symbol": "USDCHFm",
+        "type": "demand",
+        "zone_low": 0.80809,
+        "zone_high": 0.80814,
+        "base_time": "2026-06-26T16:00:00+00:00",
+        "base_price": 0.80935,
+        "touch_count": 1,
+        "last_touch": "2026-06-29T11:00:00+00:00",
+        "status": "expired_age",
+        "expired": true
+      },
+      {
+        "symbol": "USDCHFm",
+        "type": "demand",
+        "zone_low": 0.80809,
+        "zone_high": 0.80814,
+        "base_time": "2026-06-26T16:00:00+00:00",
+        "base_price": 0.80935,
+        "touch_count": 1,
+        "last_touch": "2026-06-29T12:00:00+00:00",
+        "status": "expired_age",
+        "expired": true
+      },
+      {
+        "symbol": "USDCHFm",
+        "type": "supply",
+        "zone_low": 0.81051,
+        "zone_high": 0.81055,
+        "base_time": "2026-06-26T03:00:00+00:00",
+        "base_price": 0.80944,
+        "touch_count": 0,
+        "last_touch": "",
+        "status": "expired_age",
+        "expired": true
+      },
+      {
+        "symbol": "USDCHFm",
+        "type": "demand",
+        "zone_low": 0.80809,
+        "zone_high": 0.80814,
+        "base_time": "2026-06-26T16:00:00+00:00",
+        "base_price": 0.80935,
+        "touch_count": 0,
+        "last_touch": "",
+        "status": "expired_age",
+        "expired": true
+      },
+      {
+        "symbol": "USDCHFm",
+        "type": "supply",
+        "zone_low": 0.81051,
+        "zone_high": 0.81055,
+        "base_time": "2026-06-26T03:00:00+00:00",
+        "base_price": 0.80944,
+        "touch_count": 0,
+        "last_touch": "",
+        "status": "expired_age",
+        "expired": true
+      },
+      {
+        "symbol": "USDCHFm",
+        "type": "demand",
+        "zone_low": 0.80809,
+        "zone_high": 0.80814,
+        "base_time": "2026-06-26T16:00:00+00:00",
+        "base_price": 0.80935,
+        "touch_count": 0,
+        "last_touch": "",
+        "status": "expired_age",
+        "expired": true
+      },
+      {
+        "symbol": "USDCHFm",
+        "type": "supply",
+        "zone_low": 0.81051,
+        "zone_high": 0.81055,
+        "base_time": "2026-06-26T03:00:00+00:00",
+        "base_price": 0.80944,
+        "touch_count": 0,
+        "last_touch": "",
+        "status": "expired_age",
+        "expired": true
+      },
+      {
+        "symbol": "USDCHFm",
+        "type": "demand",
+        "zone_low": 0.80809,
+        "zone_high": 0.80814,
+        "base_time": "2026-06-26T16:00:00+00:00",
+        "base_price": 0.80935,
+        "touch_count": 0,
+        "last_touch": "",
+        "status": "expired_age",
+        "expired": true
+      },
+      {
+        "symbol": "USDCHFm",
+        "type": "demand",
+        "zone_low": 0.80809,
+        "zone_high": 0.80814,
+        "base_time": "2026-06-26T16:00:00+00:00",
+        "base_price": 0.80935,
+        "touch_count": 0,
+        "last_touch": "",
+        "status": "expired_age",
+        "expired": true
+      }
+    ],
+    "USDCADm": [],
+    "AUDUSDm": [],
+    "NZDUSDm": [],
+    "XAUUSDm": []
+  },
+  "updated_at": "2026-07-02T23:48:17.224823+07:00"
+}

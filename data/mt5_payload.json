@@ -1,0 +1,309 @@
+{
+  "timestamp": "2026-06-15T04:31:24Z",
+  "symbols": {
+    "EURUSDm": {
+      "resolved": "EURUSDm",
+      "bid": 1.16084,
+      "ask": 1.16092,
+      "spread_points": 8.0,
+      "H4": {
+        "ema20": 1.15665,
+        "ema50": 1.15785,
+        "rsi": 67.44,
+        "atr": 0.00242,
+        "adx": 24.78,
+        "trend": "neutral"
+      },
+      "H1": {
+        "ema20": 1.15876,
+        "ema50": 1.15686,
+        "rsi": 74.31,
+        "atr": 0.00107,
+        "adx": 24.62,
+        "trend": "bullish"
+      },
+      "M15": {
+        "ema20": 1.1601,
+        "ema50": 1.15906,
+        "rsi": 74.46,
+        "atr": 0.00031,
+        "adx": 0.98,
+        "trend": "bullish"
+      },
+      "M5": {
+        "ema20": 1.16035,
+        "ema50": 1.16023,
+        "rsi": 86.49,
+        "atr": 0.00015,
+        "adx": 64.86,
+        "trend": "bullish"
+      }
+    },
+    "GBPUSDm": {
+      "resolved": "GBPUSDm",
+      "bid": 1.34464,
+      "ask": 1.34474,
+      "spread_points": 10.0,
+      "H4": {
+        "ema20": 1.34018,
+        "ema50": 1.34076,
+        "rsi": 64.41,
+        "atr": 0.00322,
+        "adx": 24.42,
+        "trend": "neutral"
+      },
+      "H1": {
+        "ema20": 1.34256,
+        "ema50": 1.34037,
+        "rsi": 69.74,
+        "atr": 0.0013,
+        "adx": 1.49,
+        "trend": "bullish"
+      },
+      "M15": {
+        "ema20": 1.34407,
+        "ema50": 1.34292,
+        "rsi": 59.09,
+        "atr": 0.00042,
+        "adx": 9.79,
+        "trend": "bullish"
+      },
+      "M5": {
+        "ema20": 1.34425,
+        "ema50": 1.34438,
+        "rsi": 70.42,
+        "atr": 0.00022,
+        "adx": 56.21,
+        "trend": "neutral"
+      }
+    },
+    "USDJPYm": {
+      "resolved": "USDJPYm",
+      "bid": 160.088,
+      "ask": 160.098,
+      "spread_points": 10.0,
+      "H4": {
+        "ema20": 160.20593,
+        "ema50": 160.12064,
+        "rsi": 38.96,
+        "atr": 0.25957,
+        "adx": 34.47,
+        "trend": "neutral"
+      },
+      "H1": {
+        "ema20": 160.12817,
+        "ema50": 160.24343,
+        "rsi": 43.42,
+        "atr": 0.12957,
+        "adx": 10.49,
+        "trend": "bearish"
+      },
+      "M15": {
+        "ema20": 160.08465,
+        "ema50": 160.11462,
+        "rsi": 45.52,
+        "atr": 0.04086,
+        "adx": 52.01,
+        "trend": "bearish"
+      },
+      "M5": {
+        "ema20": 160.08664,
+        "ema50": 160.07717,
+        "rsi": 50.0,
+        "atr": 0.01393,
+        "adx": 73.44,
+        "trend": "neutral"
+      }
+    },
+    "USDCHFm": {
+      "resolved": "USDCHFm",
+      "bid": 0.79359,
+      "ask": 0.79372,
+      "spread_points": 13.0,
+      "H4": {
+        "ema20": 0.79614,
+        "ema50": 0.79409,
+        "rsi": 32.2,
+        "atr": 0.00189,
+        "adx": 20.83,
+        "trend": "neutral"
+      },
+      "H1": {
+        "ema20": 0.79515,
+        "ema50": 0.79659,
+        "rsi": 27.94,
+        "atr": 0.00093,
+        "adx": 4.24,
+        "trend": "bearish"
+      },
+      "M15": {
+        "ema20": 0.7941,
+        "ema50": 0.795,
+        "rsi": 19.87,
+        "atr": 0.00024,
+        "adx": 14.46,
+        "trend": "bearish"
+      },
+      "M5": {
+        "ema20": 0.79386,
+        "ema50": 0.79399,
+        "rsi": 23.75,
+        "atr": 0.00011,
+        "adx": 57.94,
+        "trend": "bearish"
+      }
+    },
+    "USDCADm": {
+      "resolved": "USDCADm",
+      "bid": 1.39639,
+      "ask": 1.39653,
+      "spread_points": 14.0,
+      "H4": {
+        "ema20": 1.39646,
+        "ema50": 1.39329,
+        "rsi": 56.26,
+        "atr": 0.0025,
+        "adx": 0.21,
+        "trend": "bullish"
+      },
+      "H1": {
+        "ema20": 1.39717,
+        "ema50": 1.39688,
+        "rsi": 47.44,
+        "atr": 0.00104,
+        "adx": 7.31,
+        "trend": "neutral"
+      },
+      "M15": {
+        "ema20": 1.39677,
+        "ema50": 1.39708,
+        "rsi": 28.16,
+        "atr": 0.00028,
+        "adx": 5.69,
+        "trend": "bearish"
+      },
+      "M5": {
+        "ema20": 1.39664,
+        "ema50": 1.39669,
+        "rsi": 25.96,
+        "atr": 0.00015,
+        "adx": 63.91,
+        "trend": "bearish"
+      }
+    },
+    "AUDUSDm": {
+      "resolved": "AUDUSDm",
+      "bid": 0.70799,
+      "ask": 0.70808,
+      "spread_points": 9.0,
+      "H4": {
+        "ema20": 0.70419,
+        "ema50": 0.70757,
+        "rsi": 77.34,
+        "atr": 0.00226,
+        "adx": 8.23,
+        "trend": "neutral"
+      },
+      "H1": {
+        "ema20": 0.70595,
+        "ema50": 0.70366,
+        "rsi": 69.71,
+        "atr": 0.00114,
+        "adx": 35.24,
+        "trend": "bullish"
+      },
+      "M15": {
+        "ema20": 0.70755,
+        "ema50": 0.70643,
+        "rsi": 70.64,
+        "atr": 0.00035,
+        "adx": 18.07,
+        "trend": "bullish"
+      },
+      "M5": {
+        "ema20": 0.70792,
+        "ema50": 0.7077,
+        "rsi": 53.33,
+        "atr": 0.00019,
+        "adx": 57.69,
+        "trend": "bullish"
+      }
+    },
+    "NZDUSDm": {
+      "resolved": "NZDUSDm",
+      "bid": 0.58532,
+      "ask": 0.58546,
+      "spread_points": 14.0,
+      "H4": {
+        "ema20": 0.58284,
+        "ema50": 0.58446,
+        "rsi": 70.87,
+        "atr": 0.00203,
+        "adx": 16.49,
+        "trend": "neutral"
+      },
+      "H1": {
+        "ema20": 0.58394,
+        "ema50": 0.58217,
+        "rsi": 71.64,
+        "atr": 0.00094,
+        "adx": 26.74,
+        "trend": "bullish"
+      },
+      "M15": {
+        "ema20": 0.58494,
+        "ema50": 0.58424,
+        "rsi": 65.65,
+        "atr": 0.00032,
+        "adx": 2.96,
+        "trend": "bullish"
+      },
+      "M5": {
+        "ema20": 0.58507,
+        "ema50": 0.58503,
+        "rsi": 70.0,
+        "atr": 0.00016,
+        "adx": 22.72,
+        "trend": "bullish"
+      }
+    },
+    "XAUUSDm": {
+      "resolved": "XAUUSDm",
+      "bid": 4325.532,
+      "ask": 4325.812,
+      "spread_points": 280.0,
+      "H4": {
+        "ema20": 4220.43224,
+        "ema50": 4312.30833,
+        "rsi": 86.6,
+        "atr": 48.86914,
+        "adx": 19.95,
+        "trend": "neutral"
+      },
+      "H1": {
+        "ema20": 4256.53169,
+        "ema50": 4189.51596,
+        "rsi": 90.24,
+        "atr": 24.68736,
+        "adx": 18.97,
+        "trend": "bullish"
+      },
+      "M15": {
+        "ema20": 4311.46059,
+        "ema50": 4268.53369,
+        "rsi": 81.36,
+        "atr": 8.19243,
+        "adx": 58.39,
+        "trend": "bullish"
+      },
+      "M5": {
+        "ema20": 4324.54579,
+        "ema50": 4315.92325,
+        "rsi": 51.78,
+        "atr": 3.47136,
+        "adx": 2.14,
+        "trend": "bullish"
+      }
+    }
+  }
+}

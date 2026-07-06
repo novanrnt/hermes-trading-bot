@@ -1,0 +1,15 @@
+{
+  "symbol": "EURUSDm",
+  "side": "BUY",
+  "entry": 1.14465,
+  "sl": 1.14397,
+  "tp": 1.14567,
+  "rr": 1.5,
+  "confidence": 82,
+  "h1_bias": "long",
+  "h1_adx": 23.2,
+  "trigger": "engulfing",
+  "volume_ok": true,
+  "rsi": 69.5,
+  "reason": "H1 LONG trend, M5 True at EMA20, RSI 69.5, volume OK"
+}

@@ -1,0 +1,104 @@
+{
+  "updated_at": "2026-07-04T03:38:47.151773",
+  "platforms": {
+    "telegram": [
+      {
+        "id": "1189060636",
+        "name": "metsky🎩",
+        "type": "dm",
+        "thread_id": null
+      },
+      {
+        "id": "-1004396608984:6",
+        "name": "RNT AUTOTRADE / topic 6",
+        "type": "group",
+        "thread_id": "6"
+      },
+      {
+        "id": "-1004396608984:5",
+        "name": "RNT AUTOTRADE / topic 5",
+        "type": "group",
+        "thread_id": "5"
+      },
+      {
+        "id": "-1004396608984:4",
+        "name": "RNT AUTOTRADE / topic 4",
+        "type": "group",
+        "thread_id": "4"
+      },
+      {
+        "id": "-1004396608984:15",
+        "name": "RNT AUTOTRADE / topic 15",
+        "type": "group",
+        "thread_id": "15"
+      },
+      {
+        "id": "-1004396608984:3",
+        "name": "RNT AUTOTRADE / topic 3",
+        "type": "group",
+        "thread_id": "3"
+      },
+      {
+        "id": "-1004396608984:156",
+        "name": "RNT AUTOTRADE / topic 156",
+        "type": "group",
+        "thread_id": "156"
+      },
+      {
+        "id": "-1004396608984:2",
+        "name": "RNT AUTOTRADE / topic 2",
+        "type": "group",
+        "thread_id": "2"
+      },
+      {
+        "id": "-1004396608984:969",
+        "name": "RNT AUTOTRADE / topic 969",
+        "type": "group",
+        "thread_id": "969"
+      },
+      {
+        "id": "-1004396608984:970",
+        "name": "RNT AUTOTRADE / topic 970",
+        "type": "group",
+        "thread_id": "970"
+      },
+      {
+        "id": "-1004396608984:972",
+        "name": "RNT AUTOTRADE / topic 972",
+        "type": "group",
+        "thread_id": "972"
+      },
+      {
+        "id": "-1004396608984:974",
+        "name": "RNT AUTOTRADE / topic 974",
+        "type": "group",
+        "thread_id": "974"
+      }
+    ],
+    "discord": [],
+    "whatsapp": [],
+    "slack": [],
+    "signal": [],
+    "mattermost": [],
+    "matrix": [],
+    "homeassistant": [],
+    "email": [],
+    "sms": [],
+    "dingtalk": [],
+    "msgraph_webhook": [],
+    "feishu": [],
+    "wecom": [],
+    "wecom_callback": [],
+    "weixin": [],
+    "bluebubbles": [],
+    "qqbot": [],
+    "yuanbao": [],
+    "google_chat": [],
+    "irc": [],
+    "line": [],
+    "ntfy": [],
+    "photon": [],
+    "simplex": [],
+    "teams": []
+  }
+}

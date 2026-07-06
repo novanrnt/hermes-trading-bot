@@ -1,0 +1,16 @@
+{
+  "action": "entry",
+  "reason": "Konfirmasi tren H1 LONG, pola engulfing bullish pada M5, dan RSI netral mendukung entry. Volume rendah sebagai satu-satunya kelemahan, namun tidak cukup untuk membatalkan sinyal.",
+  "mode_trade": "scalp",
+  "side": "buy",
+  "best_symbol": "EURUSDm",
+  "planned_entry": 1.1443,
+  "sl_price": 1.14363,
+  "tp_price": 1.14528,
+  "rr": 1.5,
+  "confidence": 78,
+  "safety_gate": "passed",
+  "mode": "SWARM",
+  "timestamp": "2026-07-03T14:19:07.972105+00:00",
+  "execution_allowed": true
+}

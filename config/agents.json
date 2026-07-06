@@ -1,0 +1,70 @@
+{
+  "version": "1.2.0",
+  "mode": "multi_agent_debate",
+  "description": "Hermes Exness Trading System v1.2 agent registry",
+  "agents": {
+    "technical_agent": {
+      "enabled": true,
+      "bot_identity": "TechnicalBot",
+      "prompt_file": "C:/Users/Administrator/AppData/Local/hermes/prompts/active/technical_agent_prompt.txt",
+      "role": "technical_analysis",
+      "mode": "advisory",
+      "can_execute": false,
+      "requires_research": false
+    },
+    "fundamental_agent": {
+      "enabled": true,
+      "bot_identity": "FundamentalBot",
+      "prompt_file": "C:/Users/Administrator/AppData/Local/hermes/prompts/active/fundamental_agent_prompt.txt",
+      "role": "fundamental_filter",
+      "mode": "advisory",
+      "can_execute": false,
+      "requires_research": false
+    },
+    "sentiment_agent": {
+      "enabled": true,
+      "bot_identity": "SentimentBot",
+      "prompt_file": "C:/Users/Administrator/AppData/Local/hermes/prompts/active/sentiment_agent_prompt.txt",
+      "role": "market_sentiment_filter",
+      "mode": "advisory",
+      "can_execute": false,
+      "requires_research": false
+    },
+    "risk_agent": {
+      "enabled": true,
+      "bot_identity": "RiskBot",
+      "prompt_file": "C:/Users/Administrator/AppData/Local/hermes/prompts/active/risk_agent_prompt.txt",
+      "role": "risk_validation",
+      "mode": "advisory",
+      "can_execute": false,
+      "requires_research": false
+    },
+    "manager_agent": {
+      "enabled": true,
+      "bot_identity": "ManagerBot",
+      "prompt_file": "C:/Users/Administrator/AppData/Local/hermes/prompts/active/manager_agent_prompt.txt",
+      "role": "final_decision_manager",
+      "mode": "final_decision",
+      "can_execute": false,
+      "requires_research": false
+    },
+    "boss_agent": {
+      "enabled": true,
+      "bot_identity": "BossBot",
+      "prompt_file": "C:/Users/Administrator/AppData/Local/hermes/prompts/active/boss_agent_prompt.txt",
+      "role": "performance_review_and_prompt_improvement",
+      "mode": "review_only",
+      "can_execute": false,
+      "requires_research": false
+    }
+  },
+  "safety_rules": {
+    "no_agent_can_execute_mt5": true,
+    "manager_outputs_json_only_for_trading_decision": true,
+    "python_executor_is_final_safety_gate": true,
+    "on_agent_error": "skip",
+    "on_conflict": "manager_may_request_one_revision",
+    "max_revision_rounds": 1,
+    "mcp_can_execute_mt5": false
+  }
+}

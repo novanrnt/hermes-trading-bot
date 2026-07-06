@@ -1,0 +1,57 @@
+{
+  "timestamp": "2026-06-14T15:30:00",
+  "broker": "Exness",
+  "symbols": {
+    "EURUSD": {
+      "bid": 1.0852,
+      "ask": 1.0854,
+      "spread": 18,
+      "H4": {
+        "ema20": 1.084,
+        "ema50": 1.081,
+        "rsi": 62,
+        "atr": 0.007,
+        "adx": 32,
+        "plus_di": 28,
+        "minus_di": 14,
+        "trend": "bullish",
+        "resistance": 1.09,
+        "support": 1.082
+      },
+      "H1": {
+        "ema20": 1.0848,
+        "ema50": 1.0825,
+        "rsi": 58,
+        "atr": 0.0025,
+        "adx": 28,
+        "plus_di": 25,
+        "minus_di": 15,
+        "trend": "bullish",
+        "resistance": 1.088,
+        "support": 1.083
+      },
+      "M15": {
+        "ema20": 1.085,
+        "ema50": 1.0838,
+        "rsi": 55,
+        "atr": 0.001,
+        "adx": 25,
+        "plus_di": 22,
+        "minus_di": 16,
+        "trend": "bullish",
+        "resistance": 1.087,
+        "support": 1.084
+      },
+      "M5": {
+        "ema20": 1.0853,
+        "ema50": 1.0845,
+        "rsi": 54,
+        "atr": 0.0005,
+        "adx": 22,
+        "plus_di": 20,
+        "minus_di": 17,
+        "trend": "bullish"
+      }
+    }
+  }
+}

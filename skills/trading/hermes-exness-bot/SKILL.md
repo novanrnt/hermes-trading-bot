@@ -15,15 +15,16 @@ Two independent scanning systems run at different cadences, share position limit
 ```
 ────────── DAY TRADE (2-hour interval via cron 54151c37162a, 5-agent pipeline) ──────────
 → MT5 live data (8 symbols)
-→ 5-Agent Pipeline (sequential: Tech → Funda → Senti → Risk → Manager)
-  → @Techcharles_bot → Topic 969
-  → @Herisfundamentalbot → Topic 970
-  → @DafaSentiment_bot → Topic 972
-  → @Kelvinrisk_bot → Topic 973
-  → @Alwinmanager_bot → Topic 974
-  → All messages labeled [DAY]
-  → ALL agents speak Bahasa Indonesia
-  → ⚠️ 120s cron timeout limit — pipeline must complete < 120s. See `references/cron-timeout-diagnosis.md`
+→ **7-Agent Pipeline** (sequential: Tech → Funda → Senti → **Bull vs Bear Debate** → Risk → Manager)
+  🌐 → @Techcharles_bot → Topic 969
+    🌐 → @Herisfundamentalbot → Topic 970
+    🌐 → @DafaSentiment_bot → Topic 972
+    🌐 → @Kelvinrisk_bot → Topic 973
+    🌐 → @Alwinmanager_bot → Topic 974 (includes Bull vs Bear Research debate)
+    → All messages labeled [DAY]
+    → ALL agents speak Bahasa Indonesia
+    → **⚠️ 120s cron timeout limit** — pipeline must complete < 120s. See `references/cron-timeout-diagnosis.md`
+    → **Bull vs Bear Research Team** (added 2026-07-04): After Sentiment and before Risk, Bull and Bear researchers debate the trade. See `references/bull-bear-debate.md`. Total agents: 7 sequential calls.
 
 ────────── SCALPING (10-min quick scan, 2-agent fleet via agent_swarm.py --mode scalp) ──────────
 → MT5 live data (8 symbols, M5 timeframe)
@@ -766,6 +767,8 @@ Kai Review Agent: architecture, personality, 20-trade batch cron, interactive ch
 - `references/audit-trail.md` — Audit trail & rollback system for Kai suggestions
 - `references/vps-optimization.md` — RAM optimization: Defender disable, Tencent agent removal, bash zombie cleanup, Windows bloat (93% → 65% on 2GB VPS)
 - `references/crypto-binance-extension.md` — Crypto Binance Futures extension: planned architecture for running the same multi-agent swarm on Binance futures (CoinGecko top 100 → 5-agent pipeline → Binance API). Diff tables, crypto-specific sources, funding rate filter. Design only — no code written (2026-07-04).
+- `references/bull-bear-debate.md` — Bull vs Bear Research Team: TradingAgents-inspired debate phase added to DAY pipeline (2026-07-04)
+- `references/trading-memory-reflection.md` — Trading Memory & Reflection system: persistent trade log with agent context, MT5 sync, auto-reflection every 5 closed trades (2026-07-04). Memory context injected into ALL agent prompts pre-pipeline.
 - `references/scalping-scanner-bugs-20260703.md` — Two critical scalping scanner bugs (ADX alignment, RSI padding) that caused ZERO signals for 2+ days, plus fix details and trend continuation trigger expansion
 - `references/monte-carlo-analysis.md` — Monte Carlo simulation: how it works, interpreting results, when to run, profit factor vs ruin risk
 ",

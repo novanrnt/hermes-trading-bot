@@ -1,0 +1,30 @@
+{
+  "group_id": "-1004396608984",
+  "agents": {
+    "technical": {
+      "topic_id": 969,
+      "bot_token": "8993437498:AAF98qixhnF_NbVJl4h2Roxt-4IDnsWJ_Ws",
+      "label": "[TEKNIKAL]"
+    },
+    "fundamental": {
+      "topic_id": 970,
+      "bot_token": "8851334177:AAGWVruzaza35MfvofT60na0QwgI0vhasdw",
+      "label": "[FUNDAMENTAL]"
+    },
+    "sentiment": {
+      "topic_id": 972,
+      "bot_token": "8849080179:AAEZBHPapvqj3a0ISbH7HNemC3IEnITX_R4",
+      "label": "[SENTIMEN]"
+    },
+    "risk": {
+      "topic_id": 973,
+      "bot_token": "8795877618:AAHt-vNWX0rKcYWGS3X5pfBrAc_DeHtyR-c",
+      "label": "[RISK]"
+    },
+    "manager": {
+      "topic_id": 974,
+      "bot_token": "8383281440:AAEF3GF9vKpQdzPaFRij56GSR7ftX87ZpKg",
+      "label": "[MANAGER]"
+    }
+  }
+}

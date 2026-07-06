@@ -1,0 +1,74 @@
+[
+  {
+    "id": "d2d5e602-20d0-4faa-8617-0ccaf7b19f76",
+    "name": "Claude Sonnet 4",
+    "provider": "openrouter",
+    "model": "anthropic/claude-sonnet-4-20250514",
+    "baseUrl": "",
+    "createdAt": 1781190584523
+  },
+  {
+    "id": "7a842453-9a9e-4731-b9c8-1c73cc396fcd",
+    "name": "Claude Sonnet 4",
+    "provider": "anthropic",
+    "model": "claude-sonnet-4-20250514",
+    "baseUrl": "",
+    "createdAt": 1781190584523
+  },
+  {
+    "id": "e7d4d091-0dca-48d3-b887-23a3644e701c",
+    "name": "GPT-4.1",
+    "provider": "openai",
+    "model": "gpt-4.1",
+    "baseUrl": "",
+    "createdAt": 1781190584523
+  },
+  {
+    "id": "4ff94f2d-bb07-4990-894a-ed536fb0cb18",
+    "name": "glm-5.1",
+    "provider": "ollama-cloud",
+    "model": "glm-5.1",
+    "baseUrl": "https://ollama.com/v1",
+    "createdAt": 1781190584523
+  },
+  {
+    "id": "39c97dcc-57c3-4ccd-a0a5-c65d4a01b09c",
+    "name": "DeepSeek V4 Pro (Atlas Cloud)",
+    "provider": "atlascloud",
+    "model": "deepseek-ai/deepseek-v4-pro",
+    "baseUrl": "",
+    "createdAt": 1781190584523
+  },
+  {
+    "id": "69184fdf-e992-4935-82b8-14fb86e26e62",
+    "name": "DeepSeek V4 Flash (Atlas Cloud)",
+    "provider": "atlascloud",
+    "model": "deepseek-ai/deepseek-v4-flash",
+    "baseUrl": "",
+    "createdAt": 1781190584523
+  },
+  {
+    "id": "f11e768e-d18a-407a-a1c9-7976fe75805d",
+    "name": "Qwen3-235B Instruct (Atlas Cloud)",
+    "provider": "atlascloud",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "baseUrl": "",
+    "createdAt": 1781190584523
+  },
+  {
+    "id": "4784fb79-cea3-45d4-9e3b-d08fafb72bd1",
+    "name": "deepseek-v4-pro",
+    "provider": "custom",
+    "model": "deepseek-v4-pro",
+    "baseUrl": "https://ai.sumopod.com/v1",
+    "createdAt": 1781190717385
+  },
+  {
+    "id": "12c758c2-bdb1-4680-9f5e-f28eca4ad8ad",
+    "name": "mimo-v2.5-pro",
+    "provider": "custom",
+    "model": "mimo-v2.5-pro",
+    "baseUrl": "https://ai.sumopod.com/v1",
+    "createdAt": 1781371840464
+  }
+]

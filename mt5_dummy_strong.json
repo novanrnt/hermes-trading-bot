@@ -1,0 +1,117 @@
+{
+  "generated_at": "2026-06-14T04:30:00",
+  "mode": "dummy_strong_signal",
+  "symbols": {
+    "EURUSD": {
+      "bid": 1.0862, "ask": 1.0864, "spread": 0.00020,
+      "H4": {
+        "ema20": 1.0835, "ema50": 1.0800,
+        "rsi14": 62, "atr14": 0.0070, "adx14": 32,
+        "trend": "bullish", "close": 1.0862,
+        "support": 1.0800, "resistance": 1.0900
+      },
+      "H1": {
+        "ema20": 1.0848, "ema50": 1.0830,
+        "rsi14": 58, "atr14": 0.0030, "adx14": 28,
+        "trend": "bullish", "close": 1.0862
+      },
+      "M15": {
+        "ema20": 1.0855, "ema50": 1.0845,
+        "rsi14": 54, "atr14": 0.0012,
+        "trend": "bullish_pullback", "close": 1.0862
+      },
+      "M5": {
+        "ema20": 1.0858, "ema50": 1.0852,
+        "rsi14": 52, "atr14": 0.0006,
+        "trend": "neutral_consolidation", "close": 1.0862
+      },
+      "m5_candle_size": 0.0005
+    },
+    "GBPUSD": {
+      "bid": 1.2710, "ask": 1.2713, "spread": 0.00030,
+      "H4": {
+        "ema20": 1.2730, "ema50": 1.2750,
+        "rsi14": 38, "atr14": 0.0085, "adx14": 18,
+        "trend": "bearish_weak", "close": 1.2710,
+        "support": 1.2680, "resistance": 1.2760
+      },
+      "H1": {
+        "ema20": 1.2720, "ema50": 1.2735,
+        "rsi14": 40, "atr14": 0.0035, "adx14": 15,
+        "trend": "ranging", "close": 1.2710
+      },
+      "M15": {
+        "ema20": 1.2715, "ema50": 1.2720,
+        "rsi14": 42, "atr14": 0.0014,
+        "trend": "ranging", "close": 1.2710
+      },
+      "M5": {
+        "ema20": 1.2712, "ema50": 1.2716,
+        "rsi14": 44, "atr14": 0.0007,
+        "trend": "ranging", "close": 1.2710
+      },
+      "m5_candle_size": 0.0010
+    },
+    "USDJPY": {
+      "bid": 157.50, "ask": 157.53, "spread": 0.030,
+      "H4": {
+        "ema20": 157.80, "ema50": 158.20,
+        "rsi14": 35, "atr14": 1.20, "adx14": 20,
+        "trend": "bearish_weak", "close": 157.50,
+        "support": 156.80, "resistance": 158.50
+      },
+      "H1": {
+        "ema20": 157.70, "ema50": 157.90,
+        "rsi14": 38, "atr14": 0.50, "adx14": 16,
+        "trend": "ranging", "close": 157.50
+      },
+      "M15": {
+        "ema20": 157.60, "ema50": 157.65,
+        "rsi14": 40, "atr14": 0.20,
+        "trend": "ranging", "close": 157.50
+      },
+      "M5": {
+        "ema20": 157.55, "ema50": 157.58,
+        "rsi14": 42, "atr14": 0.10,
+        "trend": "ranging", "close": 157.50
+      },
+      "m5_candle_size": 0.15
+    },
+    "XAUUSD": {
+      "bid": 2385.50, "ask": 2386.00, "spread": 0.50,
+      "H4": {
+        "ema20": 2370.00, "ema50": 2350.00,
+        "rsi14": 65, "atr14": 25.00, "adx14": 35,
+        "trend": "bullish", "close": 2385.50,
+        "support": 2350.00, "resistance": 2400.00
+      },
+      "H1": {
+        "ema20": 2378.00, "ema50": 2365.00,
+        "rsi14": 60, "atr14": 12.00, "adx14": 30,
+        "trend": "bullish", "close": 2385.50
+      },
+      "M15": {
+        "ema20": 2382.00, "ema50": 2375.00,
+        "rsi14": 55, "atr14": 5.00,
+        "trend": "bullish_pullback", "close": 2385.50
+      },
+      "M5": {
+        "ema20": 2384.00, "ema50": 2380.00,
+        "rsi14": 52, "atr14": 2.50,
+        "trend": "neutral", "close": 2385.50
+      },
+      "m5_candle_size": 3.00
+    }
+  },
+  "account": {
+    "balance": 1000.00, "equity": 1000.00, "margin": 0.00,
+    "free_margin": 1000.00, "leverage": 2000
+  },
+  "daily_loss": 0.00,
+  "xauusd_daily_loss": 0.00,
+  "open_positions": 0,
+  "news": [
+    {"time": "2026-06-14T09:00:00", "currency": "USD", "impact": "low", "event": "Import Prices m/m"},
+    {"time": "2026-06-16T12:30:00", "currency": "USD", "impact": "high", "event": "Retail Sales m/m"}
+  ]
+}

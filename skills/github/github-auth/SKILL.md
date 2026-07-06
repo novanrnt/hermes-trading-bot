@@ -245,3 +245,6 @@ fi
 | Credentials not persisting | Check `git config --global credential.helper` — must be `store` or `cache` |
 | Multiple GitHub accounts | Use SSH with different keys per host alias in `~/.ssh/config`, or per-repo credential URLs |
 | `gh: command not found` + no sudo | Use git-only Method 1 above — no installation needed |
+| Slow HTTPS push (Chinese VPS) | Switch to SSH — more reliable over slow/throttled connections. SSH uses persistent TCP, is less sensitive to latency spikes. See Option B below |
+| Stuck `index.lock` on Windows git-bash | Kill zombie git process: `ps aux \\| grep git; kill -9 <PID>` |
+| `gh auth login --with-token` says "invalid" but token works via curl API | Token probably lacks `read:org` scope but has `repo`. `gh` requires `read:org` to validate; `curl` + git only need `repo`. Either add `read:org` scope or skip `gh` and use `curl`/git directly |

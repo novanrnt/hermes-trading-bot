@@ -31,7 +31,7 @@ DEFAULT_CONFIG = {
     "rsi_oversold": 25,
     "rsi_overbought": 75,
     "volume_multiplier": 0.7,
-    "max_scalp_trades_day": 20,
+    "max_scalp_trades_day": 999,
     "min_rr_scalp": 1.5,
     "trend_cont_vol": 0.6,
     "pullback_zone_atr": 2.0,

@@ -472,6 +472,54 @@ def main():
     if hour < 7 or hour >= 22:
         return
     
+    # ── Check closed scalp trades since last scan ──
+    LAST_CHECK_FILE = HERMES / "data" / "last_scalp_check.json"
+    last_check_ts = 0
+    if LAST_CHECK_FILE.exists():
+        try:
+            last_check_ts = json.load(open(LAST_CHECK_FILE)).get("ts", 0)
+        except:
+            pass
+    
+    closed_reports = []
+    try:
+        import MetaTrader5 as mt5
+        if not mt5.initialize():
+            mt5.initialize(path=r"C:\Program Files\MetaTrader 5\terminal64.exe")
+        
+        from datetime import datetime as dt
+        now_dt = dt.now()
+        check_from = dt.fromtimestamp(last_check_ts) if last_check_ts > 0 else now_dt - timedelta(hours=24)
+        deals = mt5.history_deals_get(check_from, now_dt)
+        if deals:
+            for d in reversed(deals):
+                if d.type in (1, 2) and d.comment and "SCALP" in d.comment.upper():
+                    closed_reports.append({
+                        "symbol": d.symbol,
+                        "side": "BUY" if d.type == 1 else "SELL",
+                        "pnl": d.profit,
+                        "price": d.price,
+                        "ticket": d.position_id,
+                        "time": dt.fromtimestamp(d.time).strftime("%H:%M"),
+                    })
+        mt5.shutdown()
+    except:
+        pass
+    
+    # Save last check timestamp
+    LAST_CHECK_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with open(LAST_CHECK_FILE, "w") as f:
+        json.dump({"ts": time.time()}, f)
+    
+    if closed_reports:
+        print("[SCALP] 📋 **Closed Trades Report**")
+        print("")
+        for r in closed_reports:
+            icon = "✅" if r["pnl"] > 0 else "❌"
+            pnl_str = f"+${r['pnl']:.2f}" if r["pnl"] > 0 else f"-${abs(r['pnl']):.2f}"
+            print(f"  {icon} {r['symbol']} {r['side']} @ {r['price']} | {pnl_str} | {r['time']} WIB")
+        print("")
+    
     # ── Load adaptive params from Quant Learner ──
     qc = load_quant_config()
     if qc and qc.get("_analysis"):

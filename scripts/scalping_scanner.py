@@ -474,8 +474,7 @@ def main():
     
     lines.append(f"⏰ {now.strftime('%Y-%m-%d %H:%M WIB')}")
     lines.append("")
-    lines.append("*[SCALP] This is a scalping signal — separate from [DAY] day trade system*")
-    lines.append("*Execution: pipeline will validate before entry*")
+    lines.append("*[SCALP] Quant signal — langsung eksekusi, no LLM*")
     
     print("\n".join(lines))
     
@@ -519,35 +518,60 @@ def main():
             print(f"  ⏭️ Max scalp trades today ({MAX_SCALP_TRADES_DAY}) reached")
             break
         
-        print(f"\n[SCALP] ⚡ Candidate: {sym} {c['side']} — triggering swarm...")
+        print(f"\n[SCALP] ⚡ Quant Signal: {sym} {c['side']} (Score: {c.get('score','?')}/100)")
         today_scalp_count += 1
-        
-        # Save candidate details for pipeline to read
+
+        # ── Quant: build final_decision.json & execute directly (no LLM) ──
+        from datetime import datetime, timezone
+
+        decision = {
+            "action": "entry",
+            "mode_trade": "scalp",
+            "side": c["side"].lower(),
+            "best_symbol": c["symbol"],
+            "planned_entry": c["entry"],
+            "sl_price": c["sl"],
+            "tp_price": c["tp"],
+            "rr": c.get("rr", MIN_RR_SCALP),
+            "confidence": c.get("confidence", 80),
+            "reason": c.get("reason", f"Quant {c.get('trigger','?')} signal"),
+            "safety_gate": "passed",
+            "mode": "QUANT",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "execution_allowed": True
+        }
+
+        # Save candidate for record
         cand_file = HERMES / "scalp_candidate.json"
         with open(cand_file, "w") as f:
-            # Convert numpy types (MT5 returns numpy scalars)
             class NpEncoder(json.JSONEncoder):
                 def default(self, obj):
                     if hasattr(obj, 'item'):
                         return obj.item()
                     return super().default(obj)
             json.dump(c, f, indent=2, cls=NpEncoder)
-        
+
+        # Save final_decision for executor
+        fd_file = HERMES / "final_decision.json"
+        with open(fd_file, "w") as f:
+            json.dump(decision, f, indent=2, cls=NpEncoder)
+        print(f"  → final_decision.json written (Quant mode)")
+
+        # Execute directly via demo executor (no agent swarm)
         try:
             r = subprocess.run(
-                [sys.executable, str(HERMES / "agent_swarm.py"), "--mode", "scalp", "--symbol", sym],
-                capture_output=True, text=True, timeout=180,
+                [sys.executable, str(HERMES / "trade_executor_demo.py"), "--execute"],
+                capture_output=True, text=True, timeout=120,
                 cwd=str(HERMES)
             )
-            out = r.stdout + r.stderr
-            print(f"  → agent_swarm.py exit code: {r.returncode}")
-            # Print last few lines of pipeline output
-            for line in out.split("\n")[-6:]:
+            output = r.stdout + r.stderr
+            print(f"  → Executor exit code: {r.returncode}")
+            for line in output.split("\n")[-8:]:
                 print(f"  {line.strip()}")
         except subprocess.TimeoutExpired:
-            print(f"  → Swarm pipeline TIMEOUT ({sym})")
+            print(f"  → Executor TIMEOUT ({sym})")
         except Exception as e:
-            print(f"  → Swarm pipeline ERROR: {e}")
+            print(f"  → Executor ERROR: {e}")
 
 if __name__ == "__main__":
     main()

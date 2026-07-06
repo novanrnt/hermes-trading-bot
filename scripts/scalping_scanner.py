@@ -28,6 +28,33 @@ RISK_SCALP = 0.003  # 0.3% per trade
 MIN_RR_SCALP = 1.5
 VOLUME_MULTIPLIER = 0.7  # candle volume > avg * this
 
+# ── Load adaptive config from Quant Learner ──
+QUANT_CFG_PATH = HERMES / "quant_config.json"
+_quant_cfg_loaded = False
+
+def load_quant_config():
+    global ADX_MIN, RSI_OVERSOLD, RSI_OVERBOUGHT, MAX_SCALP_TRADES_DAY
+    global VOLUME_MULTIPLIER, MIN_RR_SCALP, ENABLED_SYMBOLS, _quant_cfg_loaded
+    try:
+        if QUANT_CFG_PATH.exists():
+            with open(QUANT_CFG_PATH) as f:
+                qc = json.load(f)
+            ADX_MIN = qc.get("adx_min", ADX_MIN)
+            RSI_OVERSOLD = qc.get("rsi_oversold", RSI_OVERSOLD)
+            RSI_OVERBOUGHT = qc.get("rsi_overbought", RSI_OVERBOUGHT)
+            VOLUME_MULTIPLIER = qc.get("volume_multiplier", VOLUME_MULTIPLIER)
+            MAX_SCALP_TRADES_DAY = qc.get("max_scalp_trades_day", MAX_SCALP_TRADES_DAY)
+            MIN_RR_SCALP = qc.get("min_rr_scalp", MIN_RR_SCALP)
+            # Apply blacklist
+            blacklisted = qc.get("blacklisted_pairs", [])
+            if blacklisted:
+                print(f"  🚫 Pairs blacklisted by Quant Learner: {', '.join(blacklisted)}")
+            _quant_cfg_loaded = True
+            return qc
+    except Exception as e:
+        print(f"  ⚠️ Quant config load error: {e}")
+    return None
+
 # ── Helpers ────────────────────────────────────────────────
 
 def now_wib():
@@ -445,6 +472,13 @@ def main():
     if hour < 7 or hour >= 22:
         return
     
+    # ── Load adaptive params from Quant Learner ──
+    qc = load_quant_config()
+    if qc and qc.get("_analysis"):
+        analysis = qc.get("_analysis", {})
+        print(f"🧠 Quant Learner: {analysis.get('total_trades',0)} trades | "
+              f"WR {analysis.get('win_rate','?')}% | PnL ${analysis.get('total_pnl',0):.2f}")
+    
     # Check daily scalp trade count
     env = load_env()
     
@@ -508,6 +542,11 @@ def main():
     for c in candidates[:3]:  # max 3 candidates per scan
         sym = c["symbol"]
         
+        # Skip if blacklisted by Quant Learner
+        if qc and sym in qc.get("blacklisted_pairs", []):
+            print(f"  ⏭️ {sym} skipped — blacklisted by Quant Learner")
+            continue
+        
         # Skip if already have position for this symbol
         if sym in existing_symbols:
             print(f"  ⏭️ {sym} skipped — already have open position")
@@ -558,6 +597,7 @@ def main():
         print(f"  → final_decision.json written (Quant mode)")
 
         # Execute directly via demo executor (no agent swarm)
+        ticket = None
         try:
             r = subprocess.run(
                 [sys.executable, str(HERMES / "trade_executor_demo.py"), "--execute"],
@@ -568,10 +608,35 @@ def main():
             print(f"  → Executor exit code: {r.returncode}")
             for line in output.split("\n")[-8:]:
                 print(f"  {line.strip()}")
+            # Extract ticket
+            tm = __import__('re').search(r'ticket[= ](\d+)', output)
+            if tm:
+                ticket = tm.group(1)
         except subprocess.TimeoutExpired:
             print(f"  → Executor TIMEOUT ({sym})")
         except Exception as e:
             print(f"  → Executor ERROR: {e}")
+
+        # ── Save to Trading Memory for Quant Learner ──
+        try:
+            from trading_memory import load_memory, add_trade, save_memory
+            mem = load_memory()
+            trade_data = dict(decision)
+            trade_data["ticket"] = ticket
+            trade_data["bull_summary"] = c.get("trigger", "quant")
+            trade_data["bear_summary"] = ""
+            trade_data["risk_summary"] = f"Quant score: {c.get('score','?')}/100"
+            add_trade(mem, trade_data)
+            print(f"  → Trade saved to trading memory (#{len(mem['trades'])})")
+        except Exception as e:
+            print(f"  ⚠️ Memory save error: {e}")
+
+        # ── Auto-tune quant params every N trades ──
+        try:
+            from quant_learner import tune
+            tune()
+        except Exception as e:
+            print(f"  ⚠️ Quant learner tune error: {e}")
 
 if __name__ == "__main__":
     main()

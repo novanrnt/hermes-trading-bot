@@ -23,7 +23,7 @@ ADX_MIN = 18
 RSI_PERIOD = 7
 RSI_OVERSOLD = 25
 RSI_OVERBOUGHT = 75
-MAX_SCALP_TRADES_DAY = 5
+MAX_SCALP_TRADES_DAY = 20
 RISK_SCALP = 0.003  # 0.3% per trade
 MIN_RR_SCALP = 1.5
 VOLUME_MULTIPLIER = 0.7  # candle volume > avg * this
@@ -609,7 +609,8 @@ def main():
             for line in output.split("\n")[-8:]:
                 print(f"  {line.strip()}")
             # Extract ticket
-            tm = __import__('re').search(r'ticket[= ](\d+)', output)
+            import re
+            tm = re.search(r'ticket[= ](\d+)', output)
             if tm:
                 ticket = tm.group(1)
         except subprocess.TimeoutExpired:

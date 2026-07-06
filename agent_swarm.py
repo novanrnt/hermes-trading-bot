@@ -95,6 +95,8 @@ def load_tokens():
         "sentiment": "AGENT_SENT_TOKEN",
         "risk": "AGENT_RISK_TOKEN",
         "manager": "AGENT_MANAGER_TOKEN",
+        "bull_researcher": "AGENT_MANAGER_TOKEN",
+        "bear_researcher": "AGENT_MANAGER_TOKEN",
     }
     BOTS.clear()
     for name, cfg in AGENTS_LLM.items():

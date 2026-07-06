@@ -282,59 +282,116 @@ def check_pair(symbol, env):
     if not rsi_ok:
         return None
     
-    # Candle pattern check
+    # ── Quant Trigger: Momentum Breakout + EMA Pullback ──
     last_candle = m5_candles[-1]
-    is_pin, pin_dir = is_pinbar(last_candle)
-    
-    # Slower pin detection: check if candle direction matches bias
     close = last_candle[4]
     open_ = last_candle[1]
-    pin_match = False
-    if is_pin and pin_dir:
-        if h1_bias == "long" and pin_dir == "bullish":
-            pin_match = True
-        elif h1_bias == "short" and pin_dir == "bearish":
-            pin_match = True
+    high = last_candle[2]
+    low = last_candle[3]
     
-    # Engulfing check: prev candle body + current body
-    engulf_match = False
-    prev_candle = m5_candles[-2]
-    if h1_bias == "long" and close > open_:
-        prev_body = prev_candle[4] - prev_candle[1]
-        curr_body = close - open_
-        if prev_body < 0 and curr_body > abs(prev_body):
-            engulf_match = True
-    elif h1_bias == "short" and close < open_:
-        prev_body = prev_candle[1] - prev_candle[4]
-        curr_body = open_ - close
-        if prev_body > 0 and curr_body > prev_body:
-            engulf_match = True
+    # Recent range (last 5 closes candles)
+    lookback = 5
+    prev_highs = [c[2] for c in m5_candles[-(lookback+1):-1]]
+    prev_lows = [c[3] for c in m5_candles[-(lookback+1):-1]]
+    highest_recent = max(prev_highs) if prev_highs else high
+    lowest_recent = min(prev_lows) if prev_lows else low
     
-    # Trend continuation: candle searah trend + volume
-    trend_cont_match = False
-    if h1_bias == "long" and close > open_ and close > current_m5_ema:
-        trend_cont_match = True
-    elif h1_bias == "short" and close < open_ and close < current_m5_ema:
-        trend_cont_match = True
+    # Candle metrics
+    candle_range = high - low
+    range_ratio = candle_range / m5_atr if m5_atr > 0 else 0
+    body = abs(close - open_)
+    body_ratio = body / candle_range if candle_range > 0 else 0
     
-    # Trigger: pinbar/engulfing (pernah ada reversal setup) ATAU trend continuation + volume
-    trigger_ok = pin_match or engulf_match
-    if trend_cont_match:
-        avg_vol = avg_volume(m5_candles, 10)
-        current_vol = last_candle[5]
-        vol_ok_tc = current_vol >= avg_vol * 0.6 if avg_vol > 0 else True
-        if vol_ok_tc:
-            trigger_ok = True
+    # Momentum: break of recent range OR strong directional candle closing past EMA
+    momentum_breakout = False
+    if range_ratio >= 0.6:
+        if h1_bias == "long":
+            if high > highest_recent or (close > current_m5_ema and close > open_ and body_ratio >= 0.5):
+                momentum_breakout = True
+        elif h1_bias == "short":
+            if low < lowest_recent or (close < current_m5_ema and close < open_ and body_ratio >= 0.5):
+                momentum_breakout = True
+    
+    # Pullback: price near EMA zone + reversed back with momentum
+    ema_dist = abs(current_m5_price - current_m5_ema)
+    pullback_entry = False
+    if not momentum_breakout and ema_dist <= m5_atr * 2.0:
+        if h1_bias == "long":
+            # Price dipped near EMA, now closing above it
+            if high >= current_m5_ema and close > current_m5_ema and range_ratio >= 0.5:
+                pullback_entry = True
+        else:
+            # Price rallied near EMA, now closing below it
+            if low <= current_m5_ema and close < current_m5_ema and range_ratio >= 0.5:
+                pullback_entry = True
+    
+    trigger_ok = momentum_breakout or pullback_entry
+    trigger_type = "momentum" if momentum_breakout else ("pullback" if pullback_entry else "none")
     
     if not trigger_ok:
         return None
     
-    # Volume check (for confidence boost)
+    # ── Volume check ──
     avg_vol = avg_volume(m5_candles, 10)
     current_vol = last_candle[5]
-    volume_ok = current_vol >= avg_vol * VOLUME_MULTIPLIER if avg_vol > 0 else True
+    vol_ratio = current_vol / avg_vol if avg_vol > 0 else 0
+    volume_ok = vol_ratio >= VOLUME_MULTIPLIER
     
-    # Build result
+    # ── Confidence Scoring (Quant) ──
+    score = 50
+    
+    # ADX: stronger trend = higher confidence
+    if current_h1_adx > 35:
+        score += 15
+    elif current_h1_adx > 25:
+        score += 10
+    elif current_h1_adx >= ADX_MIN:
+        score += 5
+    
+    # Momentum: bigger candle relative to ATR = stronger signal
+    if range_ratio > 1.5:
+        score += 15
+    elif range_ratio > 1.0:
+        score += 10
+    elif range_ratio > 0.6:
+        score += 5
+    
+    # Volume: higher volume = stronger confirmation
+    if vol_ratio > 1.5:
+        score += 15
+    elif vol_ratio > 1.0:
+        score += 10
+    elif vol_ratio > 0.7:
+        score += 5
+    
+    # EMA alignment: ideal is 0.3-2.0 ATR from EMA (close enough to be pullback, far enough to be real)
+    ema_dist_ratio = ema_dist / m5_atr if m5_atr > 0 else 0
+    if 0.3 <= ema_dist_ratio <= 2.0:
+        score += 10
+    elif ema_dist_ratio < 0.3:
+        score += 5
+    
+    # RSI in trend direction
+    if h1_bias == "long" and 40 <= current_rsi <= 75:
+        score += 10
+    elif h1_bias == "short" and 25 <= current_rsi <= 60:
+        score += 10
+    
+    final_score = min(score, 100)
+    
+    # Map score to confidence level
+    if final_score >= 85:
+        confidence = 88
+    elif final_score >= 75:
+        confidence = 84
+    elif final_score >= 65:
+        confidence = 80
+    elif final_score >= 55:
+        confidence = 77
+    else:
+        confidence = 74
+    
+    # ── Build result ──
     entry_price = close
     sl_dist = m5_atr * 2.5
     if "XAU" in symbol:
@@ -364,13 +421,17 @@ def check_pair(symbol, env):
         "sl": round(sl, 5),
         "tp": round(tp, 5),
         "rr": round(MIN_RR_SCALP, 2),
-        "confidence": 82 if volume_ok else 78,
+        "confidence": confidence,
+        "score": final_score,
         "h1_bias": h1_bias,
         "h1_adx": round(current_h1_adx, 1),
-        "trigger": "pinbar" if pin_match else "engulfing",
+        "trigger": trigger_type,
         "volume_ok": volume_ok,
+        "vol_ratio": round(vol_ratio, 2),
         "rsi": round(current_rsi, 1),
-        "reason": f"H1 {h1_bias.upper()} trend, M5 {trigger_ok} at EMA20, RSI {round(current_rsi,1)}, {'volume OK' if volume_ok else 'low volume'}"
+        "reason": f"Quant {trigger_type.upper()} | H1 {h1_bias.upper()} ADX {round(current_h1_adx,1)} | "
+                  f"M5 range {range_ratio:.1f}xATR vol {vol_ratio:.1f}x | RSI {round(current_rsi,1)} "
+                  f"| Score {final_score}/100"
     }
 
 

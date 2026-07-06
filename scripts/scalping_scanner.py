@@ -19,14 +19,14 @@ ENABLED_SYMBOLS = [
     "EURUSDm", "GBPUSDm", "USDJPYm", "USDCHFm",
     "USDCADm", "AUDUSDm", "NZDUSDm", "XAUUSDm",
 ]
-ADX_MIN = 22
+ADX_MIN = 18
 RSI_PERIOD = 7
-RSI_OVERSOLD = 30
-RSI_OVERBOUGHT = 70
-MAX_SCALP_TRADES_DAY = 3
+RSI_OVERSOLD = 25
+RSI_OVERBOUGHT = 75
+MAX_SCALP_TRADES_DAY = 5
 RISK_SCALP = 0.003  # 0.3% per trade
 MIN_RR_SCALP = 1.5
-VOLUME_MULTIPLIER = 1.0  # candle volume > avg * this
+VOLUME_MULTIPLIER = 0.7  # candle volume > avg * this
 
 # ── Helpers ────────────────────────────────────────────────
 
@@ -260,7 +260,7 @@ def check_pair(symbol, env):
         trs.append(max(hl, hc, lc))
     m5_atr = sum(trs) / len(trs) if trs else 0
     
-    price_near_ema = abs(current_m5_price - current_m5_ema) <= m5_atr * 2.5
+    price_near_ema = abs(current_m5_price - current_m5_ema) <= m5_atr * 3.0
     
     if not price_near_ema:
         return None  # Price not near value zone
@@ -273,11 +273,11 @@ def check_pair(symbol, env):
     if current_rsi is None:
         return None
     
-    # Check RSI (30-70 range, filter extreme only)
+    # Check RSI (wide range 20-80, prioritize cross from extreme)
     if h1_bias == "long":
-        rsi_ok = (prev_rsi is not None and prev_rsi < RSI_OVERSOLD and current_rsi >= RSI_OVERSOLD) or (RSI_OVERSOLD <= current_rsi <= RSI_OVERBOUGHT)
+        rsi_ok = (prev_rsi is not None and prev_rsi < RSI_OVERSOLD and current_rsi >= RSI_OVERSOLD) or (current_rsi <= RSI_OVERBOUGHT)
     else:
-        rsi_ok = (prev_rsi is not None and prev_rsi > RSI_OVERBOUGHT and current_rsi <= RSI_OVERBOUGHT) or (RSI_OVERSOLD <= current_rsi <= RSI_OVERBOUGHT)
+        rsi_ok = (prev_rsi is not None and prev_rsi > RSI_OVERBOUGHT and current_rsi <= RSI_OVERBOUGHT) or (current_rsi >= RSI_OVERSOLD)
     
     if not rsi_ok:
         return None
@@ -322,7 +322,7 @@ def check_pair(symbol, env):
     if trend_cont_match:
         avg_vol = avg_volume(m5_candles, 10)
         current_vol = last_candle[5]
-        vol_ok_tc = current_vol >= avg_vol * 0.8 if avg_vol > 0 else True
+        vol_ok_tc = current_vol >= avg_vol * 0.6 if avg_vol > 0 else True
         if vol_ok_tc:
             trigger_ok = True
     

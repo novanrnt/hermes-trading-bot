@@ -420,15 +420,18 @@ def check_pair(symbol, env):
     
     # ── Build result ──
     entry_price = close
-    sl_dist = m5_atr * 2.5
+    
+    # Widen SL: pake H1 ATR biar ngikut volatilitas, bukan M5 doang
+    h1_atr_curr = h1_atr_arr[-1] if h1_atr_arr and h1_atr_arr[-1] is not None else m5_atr * 6
+    
     if "XAU" in symbol:
-        sl_dist = max(sl_dist, 5.0)
+        sl_dist = max(h1_atr_curr * 0.8, m5_atr * 4.0, 12.0)
         tp_dist = sl_dist * MIN_RR_SCALP
     elif "JPY" in symbol:
-        sl_dist = max(sl_dist / 0.01, 15) * 0.01
+        sl_dist = max(h1_atr_curr * 0.6, m5_atr * 4.0, 0.0040)
         tp_dist = sl_dist * MIN_RR_SCALP
     else:
-        sl_dist = max(sl_dist, 0.00015)
+        sl_dist = max(h1_atr_curr * 0.6, m5_atr * 4.0, 0.0025)
         tp_dist = sl_dist * MIN_RR_SCALP
     
     # SL/TP calculation by direction

@@ -636,26 +636,34 @@ def run_pipeline(mode="day", symbol="EURUSDm"):
         senti_result = "N/A (scalp)"
         
     else:
-        # DAY: full pipeline
-        print(f"[2/8] {mode_label} Technical Agent menganalisis...")
-        tech_result = call_llm(TECH_PROMPT, agent_context, "technical")
+        # DAY: full pipeline — parallelize independent agents
+        print(f"[2/8] {mode_label} Technical, Fundamental & Sentiment Agen (paralel)...")
+        with ThreadPoolExecutor(max_workers=3) as pool:
+            futures = {
+                pool.submit(call_llm, TECH_PROMPT, agent_context, "technical"): "technical",
+                pool.submit(call_llm, FUNDA_PROMPT, agent_context, "fundamental"): "fundamental",
+                pool.submit(call_llm, SENTI_PROMPT, agent_context, "sentiment"): "sentiment",
+            }
+            results = {}
+            for f in as_completed(futures):
+                name = futures[f]
+                results[name] = f.result()
+        
+        tech_result = results.get("technical", "[Analysis unavailable]")
+        funda_result = results.get("fundamental", "[Analysis unavailable]")
+        senti_result = results.get("sentiment", "[Analysis unavailable]")
+        
         msg = f"{mode_label} 🧠 **Analisis Teknikal**\n\n{tech_result}\n\n⏰ {now_wib.strftime('%H:%M WIB')}"
         send_bot_msg("technical", msg)
         print(f"  → technical selesai ✅")
-        
-        print(f"[3/8] {mode_label} Fundamental Agent menganalisis...")
-        funda_result = call_llm(FUNDA_PROMPT, agent_context, "fundamental")
         msg = f"{mode_label} 📰 **Analisis Fundamental**\n\n{funda_result}\n\n⏰ {now_wib.strftime('%H:%M WIB')}"
         send_bot_msg("fundamental", msg)
         print(f"  → fundamental selesai ✅")
-        
-        print(f"[4/8] {mode_label} Sentiment Agent menganalisis...")
-        senti_result = call_llm(SENTI_PROMPT, agent_context, "sentiment")
         msg = f"{mode_label} 📈 **Analisis Sentimen**\n\n{senti_result}\n\n⏰ {now_wib.strftime('%H:%M WIB')}"
         send_bot_msg("sentiment", msg)
         print(f"  → sentiment selesai ✅\n")
         
-        print(f"[5/8] {mode_label} Bull Researcher menyusun argumen...")
+        print(f"[5/8] {mode_label} Bull & Bear Researcher (paralel)...")
         debate_context = (
             f"**Konteks Pasar:**\n{mt5_context}\n\n"
             f"**Mode:** {mode_label} | Symbol: {symbol}\n\n"
@@ -665,8 +673,12 @@ def run_pipeline(mode="day", symbol="EURUSDm"):
         )
         if memory_context:
             debate_context += f"\n{memory_context[:400]}\n"
-        bull_result = call_llm(BULL_PROMPT, debate_context, "bull_researcher")
-        bear_result = call_llm(BEAR_PROMPT, debate_context, "bear_researcher")
+        
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            bull_future = pool.submit(call_llm, BULL_PROMPT, debate_context, "bull_researcher")
+            bear_future = pool.submit(call_llm, BEAR_PROMPT, debate_context, "bear_researcher")
+            bull_result = bull_future.result()
+            bear_result = bear_future.result()
         
         debate_msg = (
             f"{mode_label} 🐂🐻 **Research Debate**\n\n"

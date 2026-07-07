@@ -10,6 +10,7 @@ import json
 import os
 import sys
 import time
+import argparse
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Optional, Tuple
@@ -1285,13 +1286,24 @@ def cmd_execute():
 
 
 def main():
-    if len(sys.argv) < 2:
-        print("Usage:")
-        print("  python trade_executor_demo.py --check")
-        print("  python trade_executor_demo.py --execute")
-        sys.exit(1)
-
-    cmd = sys.argv[1]
+    global FINAL_DECISION_FILE
+    
+    # Parse args manually argparse-friendly
+    cmd = "--check"
+    fd_arg = str(FINAL_DECISION_FILE)
+    
+    for i, arg in enumerate(sys.argv[1:]):
+        if arg == "--file" or arg == "-f":
+            if i + 1 < len(sys.argv[1:]):
+                fd_arg = sys.argv[i + 2]
+        elif arg == "--execute":
+            cmd = "--execute"
+        elif arg == "--check":
+            cmd = "--check"
+    
+    if fd_arg != str(FINAL_DECISION_FILE):
+        FINAL_DECISION_FILE = Path(fd_arg)
+    
     if cmd == "--check":
         cmd_check()
     elif cmd == "--execute":

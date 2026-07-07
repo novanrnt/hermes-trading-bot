@@ -19,7 +19,8 @@ ENABLED_SYMBOLS = [
     "EURUSDm", "GBPUSDm", "USDJPYm", "USDCHFm",
     "USDCADm", "AUDUSDm", "NZDUSDm", "XAUUSDm",
 ]
-ADX_MIN = 18
+ADX_MIN = 18       # H1 ADX minimum (trend filter)
+ADX_MIN_M5 = 20    # M5 ADX minimum (entry filter — jangan masuk kalo M5 choppy)
 RSI_PERIOD = 7
 RSI_OVERSOLD = 25
 RSI_OVERBOUGHT = 75
@@ -28,18 +29,30 @@ RISK_SCALP = 0.003  # 0.3% per trade
 MIN_RR_SCALP = 1.5
 VOLUME_MULTIPLIER = 0.7  # candle volume > avg * this
 
+# ── Session & News Filters ──
+ASIAN_SESSION_BLOCK_START = 0    # Server time: block 00:00
+ASIAN_SESSION_BLOCK_END = 6       # Server time: until 06:00
+LONDON_NY_WINDOW_START = 14      # Server time: London Open
+LONDON_NY_WINDOW_END = 22        # Server time: NY Close
+NEWS_BLACKOUT_MINUTES = 30        # Pause 30min before/after high impact news
+
+# Session state (set by main(), read by check_pair)
+_session_penalty = 0
+_session_label = "Unknown"
+
 # ── Load adaptive config from Quant Learner ──
 QUANT_CFG_PATH = HERMES / "quant_config.json"
 _quant_cfg_loaded = False
 
 def load_quant_config():
-    global ADX_MIN, RSI_OVERSOLD, RSI_OVERBOUGHT, MAX_SCALP_TRADES_DAY
+    global ADX_MIN, ADX_MIN_M5, RSI_OVERSOLD, RSI_OVERBOUGHT, MAX_SCALP_TRADES_DAY
     global VOLUME_MULTIPLIER, MIN_RR_SCALP, ENABLED_SYMBOLS, _quant_cfg_loaded
     try:
         if QUANT_CFG_PATH.exists():
             with open(QUANT_CFG_PATH) as f:
                 qc = json.load(f)
             ADX_MIN = qc.get("adx_min", ADX_MIN)
+            ADX_MIN_M5 = qc.get("adx_min_m5", ADX_MIN_M5)
             RSI_OVERSOLD = qc.get("rsi_oversold", RSI_OVERSOLD)
             RSI_OVERBOUGHT = qc.get("rsi_overbought", RSI_OVERBOUGHT)
             VOLUME_MULTIPLIER = qc.get("volume_multiplier", VOLUME_MULTIPLIER)
@@ -54,6 +67,42 @@ def load_quant_config():
     except Exception as e:
         print(f"  ⚠️ Quant config load error: {e}")
     return None
+
+
+# ── Session & News Helpers ──
+
+NEWS_BLACKOUT_PATH = HERMES / "data" / "news_blackout.json"
+
+def get_server_hour() -> int:
+    """Get current server hour (UTC for Exness)."""
+    return datetime.now(timezone.utc).hour
+
+def is_news_blackout() -> tuple:
+    """Check if current time is in news blackout period.
+    Returns (blocked: bool, reason: str or None)"""
+    try:
+        if not NEWS_BLACKOUT_PATH.exists():
+            return False, None
+        with open(NEWS_BLACKOUT_PATH) as f:
+            nb = json.load(f)
+        now_utc = datetime.now(timezone.utc)
+        blackout_minutes = nb.get("blackout_minutes", NEWS_BLACKOUT_MINUTES)
+        for evt in nb.get("events", []):
+            try:
+                evt_time = datetime.fromisoformat(evt["time"])
+                if evt_time.tzinfo is None:
+                    evt_time = evt_time.replace(tzinfo=timezone.utc)
+                before = evt_time - timedelta(minutes=blackout_minutes)
+                after = evt_time + timedelta(minutes=blackout_minutes)
+                if before <= now_utc <= after:
+                    remaining = (after - now_utc).total_seconds() / 60
+                    return True, f"News blackout: {evt['title']} ({int(remaining)}m remaining)"
+            except Exception:
+                continue
+        return False, None
+    except Exception:
+        return False, None
+
 
 # ── Helpers ────────────────────────────────────────────────
 
@@ -261,6 +310,12 @@ def check_pair(symbol, env):
     
     if current_h1_adx is None or current_h1_adx < ADX_MIN:
         return None  # Skip — ranging
+
+    # ── M5 ADX Filter — jangan entry kalo M5 juga choppy ──
+    m5_adx_arr, _ = adx(m5_candles, 14)
+    current_m5_adx = m5_adx_arr[-1] if m5_adx_arr and len(m5_adx_arr) > 0 else None
+    if current_m5_adx is None or current_m5_adx < ADX_MIN_M5:
+        return None  # Skip — M5 terlalu choppy buat scalp entry
     
     # Determine H1 bias
     if current_h1_close > current_h1_ema:
@@ -426,6 +481,11 @@ def check_pair(symbol, env):
     
     final_score = min(score, 100)
     
+    # Apply session penalty (London-NY peak = 0 penalty, non-peak = -10)
+    global _session_penalty, _session_label
+    if _session_penalty != 0:
+        final_score = max(0, final_score + _session_penalty)
+    
     # Map score to confidence level
     if final_score >= 85:
         confidence = 88
@@ -442,7 +502,6 @@ def check_pair(symbol, env):
     entry_price = close
     
     # SL: pake M15 ATR + M5 ATR (bukan H1 yang kegedean skalanya)
-    m15_atr_curr = m15_atr_arr[-1] if m15_atr_arr and m15_atr_arr[-1] is not None else m5_atr * 4
     
     if "XAU" in symbol:
         sl_dist = max(m15_atr_curr * 1.0, m5_atr * 3.0, 10.0)
@@ -481,19 +540,37 @@ def check_pair(symbol, env):
         "rsi": round(current_rsi, 1),
         "reason": f"Quant {trigger_type.upper()} | H1 {h1_bias.upper()} ADX {round(current_h1_adx,1)} | "
                   f"M5 range {range_ratio:.1f}xATR vol {vol_ratio:.1f}x | RSI {round(current_rsi,1)} "
-                  f"| Score {final_score}/100"
+                  f"| Score {final_score}/100 | {_session_label}"
     }
 
 
 def main():
     now = now_wib()
     
-    # Only run during trading hours (07:00 - 22:00 WIB weekdays)
+    # ── Session Filter (server time = UTC) ──
     if now.weekday() >= 5:  # weekend
         return
-    hour = now.hour
-    if hour < 7 or hour >= 22:
+    
+    server_hour = get_server_hour()
+    
+    # Hard block: Asian session (00:00-06:00 server time = volume tipis)
+    if ASIAN_SESSION_BLOCK_START <= server_hour < ASIAN_SESSION_BLOCK_END:
+        return  # Hard block — market tidur
+    
+    # News blackout check
+    blocked, reason = is_news_blackout()
+    if blocked:
+        print(f"  🚫 {reason}")
         return
+    
+    # Session label buat laporan
+    global _session_penalty, _session_label
+    if LONDON_NY_WINDOW_START <= server_hour < LONDON_NY_WINDOW_END:
+        _session_label = "London-NY"
+        _session_penalty = 0
+    else:
+        _session_label = "Transition"
+        _session_penalty = -10  # Lower confidence di luar peak hours
     
     # ── Check closed scalp trades since last scan ──
     LAST_CHECK_FILE = HERMES / "data" / "last_scalp_check.json"
@@ -661,17 +738,17 @@ def main():
                     return super().default(obj)
             json.dump(c, f, indent=2, cls=NpEncoder)
 
-        # Save final_decision for executor
-        fd_file = HERMES / "final_decision.json"
+        # Save scalp decision (separate file — jangan campur sama final_decision.json day trade!)
+        fd_file = HERMES / "scalp_decision.json"
         with open(fd_file, "w") as f:
             json.dump(decision, f, indent=2, cls=NpEncoder)
-        print(f"  → final_decision.json written (Quant mode)")
+        print(f"  → scalp_decision.json written (Quant mode)")
 
         # Execute directly via demo executor (no agent swarm)
         ticket = None
         try:
             r = subprocess.run(
-                [sys.executable, str(HERMES / "trade_executor_demo.py"), "--execute"],
+                [sys.executable, str(HERMES / "trade_executor_demo.py"), "--file", str(fd_file), "--execute"],
                 capture_output=True, text=True, timeout=120,
                 cwd=str(HERMES)
             )
@@ -695,6 +772,7 @@ def main():
             mem = load_memory()
             trade_data = dict(decision)
             trade_data["ticket"] = ticket
+            trade_data["trade_mode"] = "scalp"  # Explicit label biar ga ketuker sama day trade
             trade_data["bull_summary"] = c.get("trigger", "quant")
             trade_data["bear_summary"] = ""
             trade_data["risk_summary"] = f"Quant score: {c.get('score','?')}/100"

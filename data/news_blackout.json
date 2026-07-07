@@ -1,0 +1,25 @@
+{
+  "blackout_minutes": 30,
+  "_note": "Time dalam UTC (Exness server time). Update file ini tiap minggu dengan high impact news.",
+  "events": [
+    {"time": "2026-07-08T18:00:00", "title": "FOMC Minutes", "impact": "high"},
+    {"time": "2026-07-10T06:00:00", "title": "Germany CPI (Jun)", "impact": "high"}
+  ],
+  "recurring_high_impact": {
+    "_description": "Pola news rutin yang berlaku tiap minggu (dicek otomatis kalo ga ada di events atas)",
+    "friday_1230_utc": {
+      "day": 4,
+      "hour_utc": 12,
+      "minute_utc": 30,
+      "title": "US NFP / Employment Data (Jumat pertama bulan)",
+      "impact": "high"
+    },
+    "wednesday_1800_utc": {
+      "day": 2,
+      "hour_utc": 18,
+      "minute_utc": 0,
+      "title": "US Crude Oil Inventories",
+      "impact": "medium"
+    }
+  }
+}

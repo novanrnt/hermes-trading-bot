@@ -1,26 +1,39 @@
 # Hermes Exness Trading Bot 🤖💰
 
-**Multi-agent AI trading system** for MetaTrader 5 (Exness) — day trade & scalping with full safety gates, running on Hermes Agent.
+**Multi-agent AI trading system** untuk MetaTrader 5 (Exness) — **2 sistem terpisah**: Day Trade (agent pipeline) & Scalping (M5 quant scanner). Full safety gates, running on Hermes Agent.
 
 ## Architecture
 
+### Day Trade — Full Agent Pipeline
 ```
-Scanner → Technical Agent → Fundamental Agent → Sentiment Agent → Risk Agent → Manager → Executor (Demo)
+Scanner → Technical → Fundamental → Sentiment → Risk → Manager → Executor (Demo)
 ```
+5 autonomous AI agents, cycle tiap 2 jam. Powered by `deepseek-v4-flash` via SumoPod API.
 
-5 autonomous AI agents analyze markets in sequence, powered by `deepseek-v4-flash` via SumoPod API.
+### Scalping — M5 Quant Scanner (NO Agent)
+```
+M5 Scanner (ADX + RSI + Volume + Price Action) → Risk Check → Executor (Demo)
+```
+Direct M5 scan, 10-15 menit cycle. **Tidak pakai agent pipeline.**
 
 ## Features
 
 ### Day Trade (2h cycle)
 - H4→H1→M15 timeframe analysis
 - Full 5-agent swarm: Technical, Fundamental, Sentiment, Risk, Manager
-- ADX trend filter (min 20), ATR-based SL, RR ≥ 1.8
+- ADX trend filter (H1, min 18), ATR-based SL, RR ≥ 1.8
+- Risk 0.5%/trade, max 3 positions, max 20% DD/day
 
-### Scalping (10min cycle)
-- M5 live scan across 8 forex pairs
-- EMA20 + ADX + RSI(7) + volume spike + price action filters
-- Max 3 scalp trades/day, overlap check
+### Scalping (10-15min cycle)
+- M5 live scan across 8 forex pairs (EURUSD, GBPUSD, USDJPY, USDCHF, USDCAD, AUDUSD, NZDUSD, XAUUSD)
+- **M5 ADX Filter** (min 20) — skip kalo M5 choppy
+- Session Filter — **Asian block** (00:00-06:00 UTC), **London-NY window** (14:00-22:00 UTC), penalty -10 di luar peak
+- **News Blackout** — 30 menit before/after high impact news (config: `data/news_blackout.json`)
+- EMA20 + RSI(7) + volume spike + momentum/pullback triggers
+- Max 3 scalp trades/scan, overlap check
+- Risk 0.3%/trade, RR ≥ 1.5, SL based on M15 ATR
+- **Quant Learner** — auto-tune ADX, RSI, trigger bias based on trade history
+- **Decoupled dari Day Trade** — `scalp_decision.json` terpisah, ga campur sama `final_decision.json`
 
 ### Crypto Scanner (DRAFT — Binance Futures)
 - Scan Top 100 CoinGecko → filter volume + volatility → ambil funding rate + OI dari Binance
@@ -68,16 +81,28 @@ cd hermes-trading-bot
 ## Repo Structure
 
 ```
-├── agent_swarm.py            # Day trade pipeline
-├── crypto_scanner.py         # Crypto Binance scanner (DRAFT)
-├── scalping_framework.py     # Scalping scanner
-├── trade_executor_demo.py    # Demo MT5 executor
-├── trail_check.py            # Trailing stop manager
-├── dashboard/                # Live HTML dashboard
-├── scripts/                  # Cron job scripts
-├── prompts/                  # Agent system prompts
-├── data/                     # Runtime state files
-└── config/                   # Agent configurations
+├── agent_swarm.py              # Day trade pipeline
+├── agent_orchestrator.py       # Agent orchestration logic
+├── crypto_scanner.py           # Crypto Binance scanner (DRAFT)
+├── trade_executor_demo.py      # Demo MT5 executor (supports --file)
+├── trail_check.py              # Trailing stop manager
+├── scripts/
+│   ├── scalping_scanner.py     # M5 scalping scanner (+ filters)
+│   ├── day_trade_cron.py       # Day trade cron trigger
+│   ├── quant_learner.py        # Auto-tune scalping params
+│   ├── kai_interactive.py      # Kai review agent poller
+│   ├── health_check.py         # System health check
+│   └── ...                     # Other cron scripts
+├── data/
+│   ├── news_blackout.json      # High impact news schedule (scalping)
+│   ├── scalp_decision.json     # Scalping decisions (separate file)
+│   └── ...                     # Runtime state
+├── prompts/
+│   └── review/
+│       └── kai_system.txt      # Kai system prompt (2-system aware)
+├── dashboard/                  # Live HTML dashboard
+├── config.yaml                 # Main config
+└── .env                        # Environment variables
 ```
 
 ## License

@@ -329,27 +329,45 @@ def check_pair(symbol, env):
     body = abs(close - open_)
     body_ratio = body / candle_range if candle_range > 0 else 0
     
-    # Momentum: break of recent range OR strong directional candle closing past EMA
-    momentum_breakout = False
-    if range_ratio >= 0.6:
+    # ⚠️ HARUS candle terakhir sudah closed (bukan forming)
+    # Candle[-1] = forming, candle[-2] = most recent closed
+    # Tapi kalo range candle forming udah gede, tetap diproses
+    
+    # ── Entry Confirmation Check ──
+    # Candle sebelumnya (closed candle) harus support arah
+    prev_candle = m5_candles[-2] if len(m5_candles) >= 2 else None
+    prev_directional = True  # default kalo gak ada data
+    if prev_candle:
+        prev_close = prev_candle[4]
+        prev_open = prev_candle[1]
         if h1_bias == "long":
-            if high > highest_recent or (close > current_m5_ema and close > open_ and body_ratio >= 0.5):
+            prev_directional = prev_close > prev_open  # candle sebelumnya bullish juga
+        else:
+            prev_directional = prev_close < prev_open  # candle sebelumnya bearish juga
+    
+    if not prev_directional:
+        return None  # Candle sebelumnya gak support arah — skip
+    
+    # Momentum: break of recent range + strong directional candle
+    momentum_breakout = False
+    if range_ratio >= 0.8:  # was 0.6 — perlu candle lebih kuat
+        if h1_bias == "long":
+            # HARUS kedua kondisi: break range DAN close bullish
+            if high > highest_recent and close > open_ and body_ratio >= 0.6:
                 momentum_breakout = True
         elif h1_bias == "short":
-            if low < lowest_recent or (close < current_m5_ema and close < open_ and body_ratio >= 0.5):
+            if low < lowest_recent and close < open_ and body_ratio >= 0.6:
                 momentum_breakout = True
     
-    # Pullback: price near EMA zone + reversed back with momentum
+    # Pullback: price near EMA zone + reversed back + closed candle confirm
     ema_dist = abs(current_m5_price - current_m5_ema)
     pullback_entry = False
     if not momentum_breakout and ema_dist <= m5_atr * 2.0:
         if h1_bias == "long":
-            # Price dipped near EMA, now closing above it
-            if high >= current_m5_ema and close > current_m5_ema and range_ratio >= 0.5:
+            if high >= current_m5_ema and close > current_m5_ema and range_ratio >= 0.6 and body_ratio >= 0.55:
                 pullback_entry = True
         else:
-            # Price rallied near EMA, now closing below it
-            if low <= current_m5_ema and close < current_m5_ema and range_ratio >= 0.5:
+            if low <= current_m5_ema and close < current_m5_ema and range_ratio >= 0.6 and body_ratio >= 0.55:
                 pullback_entry = True
     
     trigger_ok = momentum_breakout or pullback_entry

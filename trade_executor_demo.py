@@ -942,6 +942,8 @@ def cmd_execute():
     fd_mode = load_final_decision()
     trade_mode = (fd_mode.get("mode_trade", "day") or "day").lower() if fd_mode else "day"
     if trade_mode == "scalp":
+        # Use scalp-specific risk (0.15% default instead of 0.5%)
+        risk_pct = float(env.get("SCALP_RISK_PERCENT", "0.15"))
         min_rr = float(env.get("MIN_RR_SCALP", "1.5"))
         min_conf = int(env.get("MIN_CONFIDENCE_SCALP", "70"))
         print(f"[SCALP] Mode-specific thresholds: min_rr={min_rr}, min_conf={min_conf}")

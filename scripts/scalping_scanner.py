@@ -238,6 +238,7 @@ def check_pair(symbol, env):
     """Check one pair for scalping setup. Returns dict or None."""
     try:
         m5_candles = get_mt5_candles(symbol, "M5", 100)
+        m15_candles = get_mt5_candles(symbol, "M15", 50)
         h1_candles = get_mt5_candles(symbol, "H1", 50)
     except:
         return None
@@ -251,6 +252,7 @@ def check_pair(symbol, env):
     
     h1_ema20 = ema(h1_close, 20)
     h1_adx_arr, h1_atr_arr = adx(h1_candles, 14)
+    _, m15_atr_arr = adx(m15_candles, 14)  # M15 ATR for SL sizing
     
     # H1 Trend Filter
     current_h1_close = h1_close[-1]
@@ -439,17 +441,17 @@ def check_pair(symbol, env):
     # ── Build result ──
     entry_price = close
     
-    # Widen SL: pake H1 ATR biar ngikut volatilitas, bukan M5 doang
-    h1_atr_curr = h1_atr_arr[-1] if h1_atr_arr and h1_atr_arr[-1] is not None else m5_atr * 6
+    # SL: pake M15 ATR + M5 ATR (bukan H1 yang kegedean skalanya)
+    m15_atr_curr = m15_atr_arr[-1] if m15_atr_arr and m15_atr_arr[-1] is not None else m5_atr * 4
     
     if "XAU" in symbol:
-        sl_dist = max(h1_atr_curr * 0.8, m5_atr * 4.0, 12.0)
+        sl_dist = max(m15_atr_curr * 1.0, m5_atr * 3.0, 10.0)
         tp_dist = sl_dist * MIN_RR_SCALP
     elif "JPY" in symbol:
-        sl_dist = max(h1_atr_curr * 0.6, m5_atr * 4.0, 0.0040)
+        sl_dist = max(m15_atr_curr * 0.8, m5_atr * 3.0, 0.0030)
         tp_dist = sl_dist * MIN_RR_SCALP
     else:
-        sl_dist = max(h1_atr_curr * 0.6, m5_atr * 4.0, 0.0025)
+        sl_dist = max(m15_atr_curr * 0.8, m5_atr * 3.0, 0.0020)
         tp_dist = sl_dist * MIN_RR_SCALP
     
     # SL/TP calculation by direction

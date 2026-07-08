@@ -121,7 +121,7 @@ def load_env():
 def get_mt5_candles(symbol, timeframe, count=100):
     """Fetch MT5 candles. timeframe: 'M5' or 'H1'"""
     import MetaTrader5 as mt5
-    tf_map = {"M5": mt5.TIMEFRAME_M5, "H1": mt5.TIMEFRAME_H1}
+    tf_map = {"M5": mt5.TIMEFRAME_M5, "M15": mt5.TIMEFRAME_M15, "H1": mt5.TIMEFRAME_H1}
     # Initialize without path
     if not mt5.initialize():
         mt5.initialize(path=r"C:\Program Files\MetaTrader 5\terminal64.exe")
@@ -391,29 +391,30 @@ def check_pair(symbol, env):
     # Tapi kalo range candle forming udah gede, tetap diproses
     
     # ── Entry Confirmation Check ──
-    # Candle sebelumnya (closed candle) harus support arah
-    prev_candle = m5_candles[-2] if len(m5_candles) >= 2 else None
-    prev_directional = True  # default kalo gak ada data
-    if prev_candle:
-        prev_close = prev_candle[4]
-        prev_open = prev_candle[1]
+    # Cek 3 candle terakhir — minimal 2 dari 3 harus support arah H1
+    # (gak wajib candle sebelumnya doang, biar toleransi pullback alami)
+    last_3 = m5_candles[-4:-1] if len(m5_candles) >= 4 else m5_candles[-3:]
+    directional_count = 0
+    for c in last_3:
         if h1_bias == "long":
-            prev_directional = prev_close > prev_open  # candle sebelumnya bullish juga
+            if c[4] > c[1]:  # bullish candle
+                directional_count += 1
         else:
-            prev_directional = prev_close < prev_open  # candle sebelumnya bearish juga
+            if c[4] < c[1]:  # bearish candle
+                directional_count += 1
     
-    if not prev_directional:
-        return None  # Candle sebelumnya gak support arah — skip
+    if directional_count < 2:  # butuh minimal 2 dari 3 search arah
+        return None  # Trend M5 gak konsisten dengan H1 — skip
     
     # Momentum: break of recent range + strong directional candle
     momentum_breakout = False
-    if range_ratio >= 0.8:  # was 0.6 — perlu candle lebih kuat
+    if range_ratio >= 0.7:  # was 0.8 — sedikit longgar
         if h1_bias == "long":
             # HARUS kedua kondisi: break range DAN close bullish
-            if high > highest_recent and close > open_ and body_ratio >= 0.6:
+            if high > highest_recent and close > open_ and body_ratio >= 0.55:
                 momentum_breakout = True
         elif h1_bias == "short":
-            if low < lowest_recent and close < open_ and body_ratio >= 0.6:
+            if low < lowest_recent and close < open_ and body_ratio >= 0.55:
                 momentum_breakout = True
     
     # Pullback: price near EMA zone + reversed back + closed candle confirm

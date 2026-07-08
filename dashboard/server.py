@@ -326,12 +326,6 @@ class QuietHandler(SimpleHTTPRequestHandler):
 def main():
     port = int(os.environ.get("DASHBOARD_PORT", 5555))
 
-    # Generate initial data
-    print("[INIT] Collecting initial data...", flush=True)
-    data = collect_data()
-    save_data(data)
-    print(f"[INIT] Data saved ({len(data.get('decisions',[]))} decisions, {len(data.get('history',[]))} trades)", flush=True)
-
     # Copy index.html to static/
     src_html = DASHBOARD_DIR / "templates" / "index.html"
     dst_html = DASHBOARD_DIR / "static" / "index.html"

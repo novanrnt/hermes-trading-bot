@@ -339,11 +339,7 @@ def main():
         import shutil
         shutil.copy2(src_html, dst_html)
 
-    # Start background refresh
-    t = threading.Thread(target=data_refresh_loop, daemon=True)
-    t.start()
-
-    # Start server
+    # Start server — NO data refresh loop, handled by cron dashboard_data_provider.py
     server = HTTPServer(("0.0.0.0", port), QuietHandler)
     print(f"[OK] Dashboard running at http://0.0.0.0:{port}", flush=True)
     try:

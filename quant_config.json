@@ -1,0 +1,18 @@
+{
+  "adx_min": 15,
+  "rsi_oversold": 20,
+  "rsi_overbought": 80,
+  "volume_multiplier": 0.5,
+  "max_scalp_trades_day": 999,
+  "min_rr_scalp": 1.5,
+  "trend_cont_vol": 0.6,
+  "pullback_zone_atr": 2.0,
+  "momentum_range_ratio": 0.5,
+  "pullback_range_ratio": 0.4,
+  "blacklisted_pairs": [],
+  "trigger_bias": "none",
+  "confidence_boost_adx": true,
+  "confidence_boost_volume": true,
+  "last_tuned": "2026-07-08T17:00:00.000000+07:00",
+  "tune_count": 2
+}

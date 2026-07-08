@@ -408,13 +408,13 @@ def check_pair(symbol, env):
     
     # Momentum: break of recent range + strong directional candle
     momentum_breakout = False
-    if range_ratio >= 0.7:  # was 0.8 — sedikit longgar
+    if range_ratio >= 0.6:  # was 0.7
         if h1_bias == "long":
             # HARUS kedua kondisi: break range DAN close bullish
-            if high > highest_recent and close > open_ and body_ratio >= 0.55:
+            if high > highest_recent and close > open_ and body_ratio >= 0.5:  # was 0.55
                 momentum_breakout = True
         elif h1_bias == "short":
-            if low < lowest_recent and close < open_ and body_ratio >= 0.55:
+            if low < lowest_recent and close < open_ and body_ratio >= 0.5:
                 momentum_breakout = True
     
     # Pullback: price near EMA zone + reversed back + closed candle confirm
@@ -422,10 +422,10 @@ def check_pair(symbol, env):
     pullback_entry = False
     if not momentum_breakout and ema_dist <= m5_atr * 2.0:
         if h1_bias == "long":
-            if high >= current_m5_ema and close > current_m5_ema and range_ratio >= 0.6 and body_ratio >= 0.55:
+            if high >= current_m5_ema and close > current_m5_ema and range_ratio >= 0.5 and body_ratio >= 0.5:  # was 0.6, 0.55
                 pullback_entry = True
         else:
-            if low <= current_m5_ema and close < current_m5_ema and range_ratio >= 0.6 and body_ratio >= 0.55:
+            if low <= current_m5_ema and close < current_m5_ema and range_ratio >= 0.5 and body_ratio >= 0.5:
                 pullback_entry = True
     
     trigger_ok = momentum_breakout or pullback_entry

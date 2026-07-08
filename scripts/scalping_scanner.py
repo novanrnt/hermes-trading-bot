@@ -19,7 +19,7 @@ ENABLED_SYMBOLS = [
     "EURUSDm", "GBPUSDm", "USDJPYm", "USDCHFm",
     "USDCADm", "AUDUSDm", "NZDUSDm", "XAUUSDm",
 ]
-ADX_MIN = 18       # H1 ADX minimum (trend filter)
+ADX_MIN = 15       # H1 ADX minimum (trend filter)
 ADX_MIN_M5 = 20    # M5 ADX minimum (entry filter — jangan masuk kalo M5 choppy)
 RSI_PERIOD = 7
 RSI_OVERSOLD = 25
@@ -302,6 +302,7 @@ def check_pair(symbol, env):
     h1_ema20 = ema(h1_close, 20)
     h1_adx_arr, h1_atr_arr = adx(h1_candles, 14)
     _, m15_atr_arr = adx(m15_candles, 14)  # M15 ATR for SL sizing
+    m15_atr_curr = m15_atr_arr[-1] if m15_atr_arr and len(m15_atr_arr) > 0 else m5_atr * 2
     
     # H1 Trend Filter
     current_h1_close = h1_close[-1]
@@ -344,7 +345,7 @@ def check_pair(symbol, env):
         trs.append(max(hl, hc, lc))
     m5_atr = sum(trs) / len(trs) if trs else 0
     
-    price_near_ema = abs(current_m5_price - current_m5_ema) <= m5_atr * 3.0
+    price_near_ema = abs(current_m5_price - current_m5_ema) <= m5_atr * 4.0  # longgarin biar lebih banyak sinyal
     
     if not price_near_ema:
         return None  # Price not near value zone
@@ -403,7 +404,7 @@ def check_pair(symbol, env):
             if c[4] < c[1]:  # bearish candle
                 directional_count += 1
     
-    if directional_count < 2:  # butuh minimal 2 dari 3 search arah
+    if directional_count < 1:  # butuh minimal 1 dari 3 search arah (longgar)
         return None  # Trend M5 gak konsisten dengan H1 — skip
     
     # Momentum: break of recent range + strong directional candle

@@ -193,14 +193,21 @@ def call_llm(personality: str, trade_ctx: str, user_message: str, history: list)
     if not cfg_path.exists():
         return "[Error] config.yaml not found"
 
+    import re
     import yaml
     with open(cfg_path, "r") as f:
         cfg = yaml.safe_load(f)
-
+    
+    # Resolve ${VAR} patterns dengan environment variables
+    def resolve_env(val):
+        if isinstance(val, str):
+            return re.sub(r'\$\{(\w+)\}', lambda m: os.environ.get(m.group(1), m.group(0)), val)
+        return val
+    
     model_cfg = cfg.get("model", {})
-    api_key = model_cfg.get("api_key", "")
-    base_url = model_cfg.get("base_url", "https://api.openai.com/v1")
-    model = cfg.get("trading_model", model_cfg.get("default", "qwen3.7-max"))
+    api_key = resolve_env(model_cfg.get("api_key", ""))
+    base_url = resolve_env(model_cfg.get("base_url", "https://api.openai.com/v1"))
+    model = resolve_env(cfg.get("trading_model", model_cfg.get("default", "qwen3.7-max")))
 
     messages = [
         {"role": "system", "content": f"{personality}\n\n=== CURRENT SYSTEM STATE ===\n{trade_ctx}\n\nJawab dengan gaya casual tapi berwibawa. Maks 500 kata. Jangan pake format JSON — kamu lagi ngobrol santai di chat."},
